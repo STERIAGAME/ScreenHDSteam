@@ -71,7 +71,7 @@ When you press **F12** in-game, Steam captures two frames: a compressed JPEG (ap
 ## 🚀 Features
 
 * **Smart Matching:** The program scans both Steam and HD original folders, automatically linking `.png` and `.jpg` files together based on timestamps while filtering out game ID prefixes (e.g., `1091500_...`).
-* **Intuitive Multi-Select:** No need to hold down Ctrl. Select the desired frames with regular mouse clicks—chosen items are highlighted with a vibrant neon border.
+* **Intuitive Multi-Select:** No need to hold down Ctrl. Select the desired frames with regular mouse clicks-chosen items are highlighted with a vibrant neon border.
 * **Bypassing File System Locks:** The script bypasses Windows/Steam handle protection on the fly, re-encoding PNGs into flawless JPEGs (100% quality, no subsampling) and updating both the main file and the preview thumbnail (`thumbnails`).
 * **Aesthetics:** A clean and user-friendly interface built with `customtkinter`, featuring deep dark tones, neon accents, and an adaptive grid fitting any screen size. *(Could be fancier, but it was quickly put together for personal use ^_^).*
 * **Auto Memory Cleanup:** Once the upgrade is successful, the program automatically deletes the originals from the source folder to save disk space.
