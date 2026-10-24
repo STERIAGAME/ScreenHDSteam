@@ -52,3 +52,65 @@ python -m PyInstaller --noconsole --onefile --collect-all customtkinter ScreenHD
 * Проект распространяется под открытой лицензией **MIT License**. Вы можете свободно модифицировать и распространять этот код.
 * **Текущий статус:** На данный момент основная функция умного сопоставления и принудительного апгрейда файлов протестирована и работает абсолютно исправно. Проект полностью завершен, решает все поставленные задачи, поэтому выпуск последующих обновлений, патчей или функциональных улучшений не планируется.
 * *Built with ❤️ and AI assistance.* Логика, архитектура глубокого поиска пересечений кэша NTFS и графический интерфейс спроектированы в соавторстве с ИИ по техническому заданию автора.
+
+
+
+_________________________________________________________
+
+
+# ⚡ ScreenHDSteam Studio (v2.6 NEON)
+
+**ScreenHDSteam** is a modern, minimalist Python GUI utility tailored specifically for virtual photography enthusiasts. The program solves the aggressive screenshot compression issue in the Steam client by automatically replacing "blurry" cloud copies with uncompressed, high-quality originals.
+
+---
+
+## 🛑 The Problem
+
+When you press **F12** in-game, Steam captures two frames: a compressed JPEG (approx. 600 KB) for the cloud, and a high-quality PNG/JPEG (4 MB+) sent to an external folder. However, it is impossible to upload the high-quality shot to your Steam profile using standard methods—the client forces a sync of the re-compressed, "blurry" image, destroying texture details and effects (most noticeable in games like Cyberpunk 2077).
+
+## 🚀 Features
+
+* **Smart Matching:** The program scans both Steam and HD original folders, automatically linking `.png` and `.jpg` files together based on timestamps while filtering out game ID prefixes (e.g., `1091500_...`).
+* **Intuitive Multi-Select:** No need to hold down Ctrl. Select the desired frames with regular mouse clicks—chosen items are highlighted with a vibrant neon border.
+* **Bypassing File System Locks:** The script bypasses Windows/Steam handle protection on the fly, re-encoding PNGs into flawless JPEGs (100% quality, no subsampling) and updating both the main file and the preview thumbnail (`thumbnails`).
+* **Aesthetics:** A clean and user-friendly interface built with `customtkinter`, featuring deep dark tones, neon accents, and an adaptive grid fitting any screen size. *(Could be fancier, but it was quickly put together for personal use ^_^).*
+* **Auto Memory Cleanup:** Once the upgrade is successful, the program automatically deletes the originals from the source folder to save disk space.
+
+---
+
+## ⚙️ How to Use
+
+1. Open **Steam** -> **Settings** -> **In-Game**. Toggle on *"Save an uncompressed copy of my screenshots"* and select the **PNG** format.
+2. Launch **ScreenHDSteam**.
+3. Click the **⚙ Settings** button in the top right corner of the program:
+   * In the **Source** field, specify the folder where Steam saves your external copies (e.g., `C:\Users\USERNAME\Documents`).
+   * In the **Destination** field, specify the path to the specific game's screenshot folder inside Steam (the path must end strictly with the word `screenshots`, e.g., `D:\Steam\userdata\...\1091500\screenshots`).
+4. Click **Save Configuration** (the paths will be permanently saved).
+5. Take a screenshot in-game (F12), switch to the program, click **🔄 REFRESH**, select your frame, and click **UPGRADE TO HD**.
+6. Restart the Steam screenshot manager window—the file size will instantly jump to several megabytes. Hit **"Upload"**!
+
+---
+
+## 🛠️ Tech Stack (For Developers)
+
+If you want to run the project from source code:
+
+```bash
+# Install required dependencies
+pip install customtkinter pillow pyinstaller
+
+# Run the application
+python ScreenHDSteam.py
+
+# Compile into a standalone Windows .exe file
+python -m PyInstaller --noconsole --onefile --collect-all customtkinter ScreenHDSteam.py
+```
+
+---
+
+## 📜 License & Project Status
+
+* The project is distributed under the open **MIT License**. Feel free to modify and share this code.
+* **Current Status:** The core smart matching and forced file upgrade features are fully tested and working flawlessly. The project is fully complete and achieves all its goals, so no future updates, patches, or functional improvements are planned.
+* *Built with ❤️ and AI assistance.* The logic, deep NTFS cache intersection search architecture, and graphical user interface were co-designed with AI based on the author's technical specifications.
+
