@@ -1,4 +1,4 @@
-# ⚡ ScreenHDSteam Studio (v2.6 NEON)
+# ⚡ ScreenHDSteam Studio (v2.6 NEON) - RU
 
 **ScreenHDSteam** - это современная минималистичная утилита на Python с интерфейсом, созданная специально для любителей виртуальной фотографии в играх. Программа решает проблему агрессивного сжатия скриншотов в клиенте Steam, автоматически заменяя "мыльные" облачные копии на несжатые оригиналы высокого качества.
 
@@ -58,7 +58,7 @@ python -m PyInstaller --noconsole --onefile --collect-all customtkinter ScreenHD
 _________________________________________________________
 
 
-# ⚡ ScreenHDSteam Studio (v2.6 NEON)
+# ⚡ ScreenHDSteam Studio (v2.6 NEON) ENG
 
 **ScreenHDSteam** is a modern, minimalist Python GUI utility tailored specifically for virtual photography enthusiasts. The program solves the aggressive screenshot compression issue in the Steam client by automatically replacing "blurry" cloud copies with uncompressed, high-quality originals.
 
