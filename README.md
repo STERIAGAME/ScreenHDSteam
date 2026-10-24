@@ -66,7 +66,7 @@ _________________________________________________________
 
 ## 🛑 The Problem
 
-When you press **F12** in-game, Steam captures two frames: a compressed JPEG (approx. 600 KB) for the cloud, and a high-quality PNG/JPEG (4 MB+) sent to an external folder. However, it is impossible to upload the high-quality shot to your Steam profile using standard methods—the client forces a sync of the re-compressed, "blurry" image, destroying texture details and effects (most noticeable in games like Cyberpunk 2077).
+When you press **F12** in-game, Steam captures two frames: a compressed JPEG (approx. 600 KB) for the cloud, and a high-quality PNG/JPEG (4 MB+) sent to an external folder. However, it is impossible to upload the high-quality shot to your Steam profile using standard methods-the client forces a sync of the re-compressed, "blurry" image, destroying texture details and effects (most noticeable in games like Cyberpunk 2077).
 
 ## 🚀 Features
 
@@ -87,7 +87,7 @@ When you press **F12** in-game, Steam captures two frames: a compressed JPEG (ap
    * In the **Destination** field, specify the path to the specific game's screenshot folder inside Steam (the path must end strictly with the word `screenshots`, e.g., `D:\Steam\userdata\...\1091500\screenshots`).
 4. Click **Save Configuration** (the paths will be permanently saved).
 5. Take a screenshot in-game (F12), switch to the program, click **🔄 REFRESH**, select your frame, and click **UPGRADE TO HD**.
-6. Restart the Steam screenshot manager window—the file size will instantly jump to several megabytes. Hit **"Upload"**!
+6. Restart the Steam screenshot manager window-the file size will instantly jump to several megabytes. Hit **"Upload"**!
 
 ---
 
