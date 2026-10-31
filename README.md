@@ -1,4 +1,4 @@
-# <img src="iconShdS.png" width="400" height="400" align="center">ScreenHDSteam Studio (v3.0 AUTO)
+# <img src="iconShdS.png" width="400" height="400" align="center">ScreenHDSteam Studio
 
 
 **ScreenHDSteam Studio** - это современная минималистичная утилита на Python с графическим интерфейсом, созданная специально для любителей виртуальной фотографии в играх. Программа решает проблему агрессивного сжатия скриншотов в клиенте Steam, автоматически заменяя стандартные облачные копии на несжатые оригиналы высокого качества.
@@ -65,7 +65,7 @@ python -m PyInstaller --noconfirm --onefile --windowed --icon="iconShdS.ico" --a
 
 _________________________________________________________
 
-# <img src="iconShdS.png" width="400" height="400" align="center">ScreenHDSteam Studio (v3.0 AUTO)
+# <img src="iconShdS.png" width="400" height="400" align="center">ScreenHDSteam Studio
 
 **ScreenHDSteam Studio** is a modern minimalist Python utility with a graphical user interface created specifically for virtual photography enthusiasts in games. The application resolves the aggressive compression issue of Steam client screenshots by automatically replacing standard cloud copies with uncompressed high quality originals.
 
