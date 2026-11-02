@@ -8,12 +8,26 @@ import locale
 import threading
 import time
 import urllib.request
+
+try:
+    from PIL import Image
+    PIL_AVAILABLE = True
+except ImportError:
+    Image = None
+    PIL_AVAILABLE = False
+
 from PyQt6.QtCore import Qt, QSize, QPoint, QThread, pyqtSignal, QTimer, QUrl
-from PyQt6.QtWidgets import (QApplication, QMainWindow, QWidget, QVBoxLayout, 
-                             QHBoxLayout, QLabel, QScrollArea, QGridLayout, 
-                             QFrame, QPushButton, QFileDialog, QComboBox, 
-                             QLineEdit, QMessageBox, QSpacerItem, QSizePolicy)
-from PyQt6.QtGui import QIcon, QPixmap, QPainter, QPainterPath, QColor, QPen, QDesktopServices
+from PyQt6.QtWidgets import (
+    QApplication, QMainWindow, QWidget, QVBoxLayout, 
+    QHBoxLayout, QLabel, QScrollArea, QGridLayout, 
+    QFrame, QPushButton, QFileDialog, QComboBox, 
+    QLineEdit, QMessageBox, QSpacerItem, QSizePolicy
+)
+from PyQt6.QtGui import (
+    QIcon, QPixmap, QImage, QPainter, QPainterPath, 
+    QColor, QPen, QDesktopServices, QCursor
+)
+
 CONFIG_FILE = "config.txt"
 ICON_FILE_NAME = "iconShdS.ico"
 ICON_PNG_NAME = "iconShdS.png"
@@ -25,12 +39,9 @@ ICON_MODE_AUTO = "btn_mode_auto.png"
 ICON_MODE_CUSTOM = "btn_mode_custom.png"
 ICON_UPDATE_GIT = "btn_update_git.png"
 
-VERSION = "v4.1 Major Update"
-GITHUB_CHECK_TAG = "v4.1"
-
-GITHUB_API_URL = "https://github.com"
-# Точная проверенная ссылка на страницу твоих релизов
-GITHUB_RELEASE_URL = "https://github.com/STERIAGAME/ScreenHDSteam/releases"
+VERSION = "v4.2 Major Update FREE"
+GITHUB_CHECK_TAG = "v4.2"
+GITHUB_RELEASE_URL = "https://boosty.to/steriagame"
 
 
 def resolve_resource_path(file_name):
@@ -43,6 +54,7 @@ def resolve_resource_path(file_name):
         return debug_path
     return file_name
 
+
 def get_system_language():
     try:
         lang, _ = locale.getlocale()
@@ -54,6 +66,7 @@ def get_system_language():
             if val.lower().startswith("ru"):
                 return "RU"
     return "EN"
+
 
 LANG = get_system_language()
 TRANSLATIONS = {
@@ -80,10 +93,15 @@ TRANSLATIONS = {
         "select_warning": "Выберите кадры для апгрейда!",
         "success_title": "Успешно",
         "success_msg": "Скриншоты заменены на HD, миниатюры обновлены: {} шт.<br><br><span style='color: #ef4444; font-weight: bold;'>ВАЖНО!</span> Скриншоты могут не обновиться в самом Steam пока Steam будет не перезагружен.",
-        "file_error": "Ошибка чтения файла",
+        "file_error": "Ошибка файла",
         "select_single_warn": "Пожалуйста, выберите ровно один скриншот Steam для кастомной замены.",
         "scanning_text": "Выполняется сканирование директорий...",
-        "ok": "OK"
+        "ok": "OK",
+        "update_required": "Требуется обновление",
+        "choose_custom_file": "Выберите файл для подмены",
+        "image_files_filter": "Изображения (*.jpg *.jpeg *.png *.webp *.avif)",
+        "pillow_missing": "Библиотека Pillow не установлена.<br>Выполните в терминале: <b>pip install Pillow</b>",
+        "process_error": "Не удалось обработать изображение.<br>Для поддержки формата (например, AVIF) установите: <b>pip install pillow-heif</b>"
     },
     "EN": {
         "title": "ScreenHDSteam Studio",
@@ -108,15 +126,23 @@ TRANSLATIONS = {
         "select_warning": "Select captures for upgrade!",
         "success_title": "Success",
         "success_msg": "Screenshots replaced with HD, thumbnails updated: {} pcs.<br><br><span style='color: #ef4444; font-weight: bold;'>IMPORTANT!</span> Screenshots may not update inside Steam until Steam is restarted.",
-        "file_error": "File read error",
+        "file_error": "File Error",
         "select_single_warn": "Please select exactly one Steam screenshot for custom replacement.",
         "scanning_text": "Scanning directories in progress...",
-        "ok": "OK"
+        "ok": "OK",
+        "update_required": "Update required",
+        "choose_custom_file": "Select replacement file",
+        "image_files_filter": "Images (*.jpg *.jpeg *.png *.webp *.avif)",
+        "pillow_missing": "Pillow library is not installed.<br>Run in terminal: <b>pip install Pillow</b>",
+        "process_error": "Failed to process image.<br>For additional formats (like AVIF), install: <b>pip install pillow-heif</b>"
     }
 }
 
+
 def __(key):
-    return TRANSLATIONS[LANG].get(key, key)
+    return TRANSLATIONS.get(LANG, TRANSLATIONS["EN"]).get(key, key)
+
+
 def get_steam_main_path():
     try:
         hkey = winreg.OpenKey(winreg.HKEY_CURRENT_USER, r"Software\Valve\Steam")
@@ -127,6 +153,7 @@ def get_steam_main_path():
             if os.path.exists(p):
                 return os.path.normpath(p)
     return ""
+
 
 def auto_detect_hd_screenshot_folder():
     steam_path = get_steam_main_path()
@@ -143,8 +170,11 @@ def auto_detect_hd_screenshot_folder():
                             detected_path = os.path.normpath(parts[-2].strip().replace(r"\\", os.sep))
                             if os.path.exists(detected_path):
                                 return detected_path
-        except Exception: pass
+        except Exception:
+            pass
     return ""
+
+
 def get_steam_lib_paths():
     libs = []
     steam_path = get_steam_main_path()
@@ -162,6 +192,7 @@ def get_steam_lib_paths():
                                 libs.append(p)
     return list(set(libs))
 
+
 def get_game_name_local(appid):
     libs = get_steam_lib_paths()
     for lib in libs:
@@ -174,8 +205,9 @@ def get_game_name_local(appid):
                             parts = line.split('"')
                             if len(parts) >= 4:
                                 return parts[-2].strip()
-            except Exception: pass
-            
+            except Exception:
+                pass
+
     common_apps = {
         "2406770": "Bodycam",
         "1091500": "Cyberpunk 2077",
@@ -185,28 +217,34 @@ def get_game_name_local(appid):
         "1407200": "Alan Wake Remastered",
         "1517290": "Battlefield 2042"
     }
-    if str(appid) in common_apps:
-        return common_apps[str(appid)]
-        
-    return f"Игра (AppID {appid})"
+    return common_apps.get(str(appid), f"Игра (AppID {appid})")
+
+
 def scan_games_with_screenshots():
     found_games = {}
     libs = get_steam_lib_paths()
     for lib in libs:
         userdata_path = os.path.join(lib, "userdata")
-        if not os.path.exists(userdata_path): continue
+        if not os.path.exists(userdata_path):
+            continue
         for user_id in os.listdir(userdata_path):
             user_folder = os.path.join(userdata_path, user_id, "760", "remote")
-            if not os.path.exists(user_folder): continue
+            if not os.path.exists(user_folder):
+                continue
             for app_id in os.listdir(user_folder):
-                if app_id == "0": continue
+                if app_id == "0":
+                    continue
                 screenshots_dir = os.path.join(user_folder, app_id, "screenshots")
                 if os.path.exists(screenshots_dir):
-                    files = glob.glob(os.path.join(screenshots_dir, "*.jpg")) + glob.glob(os.path.join(screenshots_dir, "*.jpeg"))
+                    files = (
+                        glob.glob(os.path.join(screenshots_dir, "*.jpg")) + 
+                        glob.glob(os.path.join(screenshots_dir, "*.jpeg"))
+                    )
                     if files:
                         game_name = get_game_name_local(app_id)
                         found_games[game_name] = os.path.normpath(screenshots_dir)
     return found_games
+
 
 def load_paths():
     hd_path, steam_path = "", ""
@@ -214,19 +252,26 @@ def load_paths():
         try:
             with open(CONFIG_FILE, "r", encoding="utf-8") as f:
                 lines = [line.strip() for line in f.read().splitlines()]
-                if len(lines) >= 1: hd_path = os.path.normpath(lines[0])
-                if len(lines) >= 2: steam_path = os.path.normpath(lines[1])
-        except Exception: pass
+                if len(lines) >= 1:
+                    hd_path = os.path.normpath(lines[0])
+                if len(lines) >= 2:
+                    steam_path = os.path.normpath(lines[1])
+        except Exception:
+            pass
     if not hd_path or not os.path.exists(hd_path):
         detected_hd = auto_detect_hd_screenshot_folder()
         hd_path = detected_hd if detected_hd else os.path.normpath(os.path.expanduser("~/Documents"))
     return hd_path, steam_path
 
+
 def save_paths(hd_path, steam_path):
     try:
         with open(CONFIG_FILE, "w", encoding="utf-8") as f:
             f.write(f"{os.path.normpath(hd_path.strip())}\n{os.path.normpath(steam_path.strip())}")
-    except Exception: pass
+    except Exception:
+        pass
+
+
 class SteamComboBox(QComboBox):
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -235,56 +280,66 @@ class SteamComboBox(QComboBox):
                 background-color: #1e293b; 
                 color: #f8fafc; 
                 border: 1px solid #334155; 
-                padding: 6px 30px 6px 12px; 
+                padding: 6px 12px; 
                 border-radius: 4px; 
-                font-size: 12px; 
-            } 
+                min-width: 100px;
+                font-size: 12px;
+            }
+            QComboBox:hover {
+                border: 1px solid #00f0ff;
+            }
             QComboBox::drop-down { 
                 subcontrol-origin: padding; 
                 subcontrol-position: top right; 
-                width: 25px; 
-                border-left: 1px solid #334155; 
+                width: 30px; 
+                border-left: none;
             }
             QComboBox::down-arrow { 
-                border: 4px solid transparent; 
-                border-top-color: #00f0ff; 
-                margin-top: 4px; 
+                image: none;
+                border-left: 5px solid transparent;
+                border-right: 5px solid transparent;
+                border-top: 5px solid #94a3b8;
+                width: 0;
+                height: 0;
+                margin-right: 2px;
             }
-            QComboBox QAbstractItemView { 
-                background-color: #121824; 
-                color: #f8fafc; 
-                border: 1px solid #1e293b; 
-                selection-background-color: #00f0ff; 
-                selection-color: #07080a; 
-                outline: none; 
+            QComboBox::down-arrow:hover {
+                border-top-color: #00f0ff;
+            }
+            QComboBox QAbstractItemView {
+                background-color: #0d0f12;
+                color: #f8fafc;
+                border: 1px solid #1e293b;
+                selection-background-color: #1e293b;
+                selection-color: #00f0ff;
+                outline: 0px;
+                padding: 4px;
             }
             QComboBox::item { 
-                min-height: 32px; 
-                padding-left: 10px; 
-                color: #f8fafc; 
-                background-color: #121824; 
+                min-height: 28px; 
+                padding-left: 8px; 
             }
-            QComboBox::item:selected { 
-                background-color: #00f0ff; 
-                color: #07080a; 
-            }
-            QComboBox QAbstractItemView QScrollBar:vertical { 
+            QComboBox QAbstractItemView QScrollBar:vertical {
+                background-color: #0d0f12;
+                width: 10px;
+                margin: 6px 0;
                 border: none;
-                background-color: #121824; 
-                width: 10px; 
-                margin: 0px; 
             }
-            QComboBox QAbstractItemView QScrollBar::handle:vertical { 
-                background-color: #334155; 
-                min-height: 20px; 
-                border-radius: 5px; 
+            QComboBox QAbstractItemView QScrollBar::handle:vertical {
+                background-color: #334155;
+                min-height: 20px;
+                border-radius: 4px;
             }
-            QComboBox QAbstractItemView QScrollBar::handle:vertical:hover { 
-                background-color: #00f0ff; 
+            QComboBox QAbstractItemView QScrollBar::handle:vertical:hover {
+                background-color: #00f0ff;
             }
-            QComboBox QAbstractItemView QScrollBar::add-line:vertical, 
-            QComboBox QAbstractItemView QScrollBar::sub-line:vertical { 
-                border: none; background: none; height: 0px; 
+            QComboBox QAbstractItemView QScrollBar::sub-line:vertical,
+            QComboBox QAbstractItemView QScrollBar::add-line:vertical,
+            QComboBox QAbstractItemView QScrollBar::up-arrow:vertical, 
+            QComboBox QAbstractItemView QScrollBar::down-arrow:vertical {
+                border: none;
+                background: none;
+                height: 0px;
             }
             QComboBox QAbstractItemView QScrollBar::add-page:vertical, 
             QComboBox QAbstractItemView QScrollBar::sub-page:vertical {
@@ -292,12 +347,7 @@ class SteamComboBox(QComboBox):
             }
         """)
 
-    def showPopup(self):
-        super().showPopup()
-        popup = self.findChild(QFrame)
-        if popup:
-            global_pos = self.mapToGlobal(QPoint(0, self.height()))
-            popup.move(global_pos)
+
 class SettingsWindow(QWidget):
     def __init__(self, parent):
         super().__init__()
@@ -316,9 +366,12 @@ class SettingsWindow(QWidget):
         
         png_path = resolve_resource_path(ICON_PNG_NAME)
         ico_path = resolve_resource_path(ICON_FILE_NAME)
-        if os.path.exists(png_path): self.setWindowIcon(QIcon(png_path))
-        elif os.path.exists(ico_path): self.setWindowIcon(QIcon(ico_path))
+        if os.path.exists(png_path):
+            self.setWindowIcon(QIcon(png_path))
+        elif os.path.exists(ico_path):
+            self.setWindowIcon(QIcon(ico_path))
             
+        self._is_dragging = False
         self._drag_position = QPoint()
         px = parent.x() + (parent.width() // 2) - 275
         py = parent.y() + (parent.height() // 2) - 120
@@ -355,7 +408,10 @@ class SettingsWindow(QWidget):
         close_btn = QPushButton("✕", header)
         close_btn.setFixedSize(24, 24)
         close_btn.setFocusPolicy(Qt.FocusPolicy.NoFocus)
-        close_btn.setStyleSheet("QPushButton { color: #94a3b8; border: none; font-weight: bold; background: transparent; outline: none; } QPushButton:hover { color: #ef4444; }")
+        close_btn.setStyleSheet("""
+            QPushButton { color: #94a3b8; border: none; font-weight: bold; background: transparent; outline: none; } 
+            QPushButton:hover { color: #ef4444; }
+        """)
         close_btn.clicked.connect(self.close)
         header_layout.addWidget(close_btn, 0, Qt.AlignmentFlag.AlignRight)
         
@@ -381,7 +437,10 @@ class SettingsWindow(QWidget):
         
         browse_btn = QPushButton(__("browse"), content)
         browse_btn.setFocusPolicy(Qt.FocusPolicy.NoFocus)
-        browse_btn.setStyleSheet("QPushButton { background-color: #1e293b; color: #00f0ff; font-weight: bold; border: 1px solid #334155; padding: 5px 15px; border-radius: 4px; outline: none; } QPushButton:hover { background-color: #334155; }")
+        browse_btn.setStyleSheet("""
+            QPushButton { background-color: #1e293b; color: #00f0ff; font-weight: bold; border: 1px solid #334155; padding: 5px 15px; border-radius: 4px; outline: none; } 
+            QPushButton:hover { background-color: #334155; }
+        """)
         browse_btn.clicked.connect(self.browse_hd)
         hd_row.addWidget(browse_btn)
         content_layout.addLayout(hd_row)
@@ -407,24 +466,43 @@ class SettingsWindow(QWidget):
         save_btn = QPushButton(__("save_settings"), content)
         save_btn.setFixedHeight(38)
         save_btn.setFocusPolicy(Qt.FocusPolicy.NoFocus)
-        save_btn.setStyleSheet("QPushButton { background-color: #00f0ff; color: #07080a; font-weight: bold; border-radius: 6px; border: none; margin-top: 4px; outline: none; } QPushButton:hover { background-color: #00cc99; }")
+        save_btn.setStyleSheet("""
+            QPushButton { background-color: #00f0ff; color: #07080a; font-weight: bold; border-radius: 6px; border: none; margin-top: 4px; outline: none; } 
+            QPushButton:hover { background-color: #00cc99; }
+        """)
         save_btn.clicked.connect(self.save_and_close)
         content_layout.addWidget(save_btn)
         container.layout().addWidget(content)
 
     def mousePressEvent(self, event):
-        if event.button() == Qt.MouseButton.LeftButton:
+        if event.button() == Qt.MouseButton.LeftButton and event.position().y() <= 45:
+            self._is_dragging = True
             self._drag_position = event.globalPosition().toPoint() - self.frameGeometry().topLeft()
             event.accept()
+        else:
+            self._is_dragging = False
 
     def mouseMoveEvent(self, event):
-        if event.buttons() == Qt.MouseButton.LeftButton:
-            self.move(event.globalPosition().toPoint() - self._drag_position)
+        if self._is_dragging:
+            new_position = event.globalPosition().toPoint() - self._drag_position
+            screen = QApplication.screenAt(QCursor.pos())
+            if screen:
+                screen_geometry = screen.geometry()
+                new_x = max(screen_geometry.x(), min(new_position.x(), screen_geometry.width() - self.width()))
+                new_y = max(screen_geometry.y(), min(new_position.y(), screen_geometry.height() - self.height()))
+                self.move(new_x, new_y)
+            else:
+                self.move(new_position)
             event.accept()
+
+    def mouseReleaseEvent(self, event):
+        self._is_dragging = False
+        event.accept()
 
     def browse_hd(self):
         folder = QFileDialog.getExistingDirectory(self, __("hd_placeholder"))
-        if folder: self.entry_hd.setText(os.path.normpath(folder))
+        if folder:
+            self.entry_hd.setText(os.path.normpath(folder))
 
     def save_and_close(self):
         hd = os.path.normpath(self.entry_hd.text())
@@ -435,6 +513,8 @@ class SettingsWindow(QWidget):
         self.parent.steam_path = steam
         self.close()
         self.parent.parent_scan_trigger()
+
+
 class CustomMessageBox(QWidget):
     def __init__(self, title, text, parent=None):
         super().__init__(parent, Qt.WindowType.FramelessWindowHint | Qt.WindowType.CustomizeWindowHint | Qt.WindowType.Dialog)
@@ -468,7 +548,10 @@ class CustomMessageBox(QWidget):
         ok_btn = QPushButton(__("ok"), body)
         ok_btn.setFixedSize(100, 36)
         ok_btn.setFocusPolicy(Qt.FocusPolicy.NoFocus)
-        ok_btn.setStyleSheet("QPushButton { background-color: #00f0ff; color: #07080a; font-weight: bold; border-radius: 5px; border: none; outline: none; } QPushButton:hover { background-color: #00cc99; }")
+        ok_btn.setStyleSheet("""
+            QPushButton { background-color: #00f0ff; color: #07080a; font-weight: bold; border-radius: 5px; border: none; outline: none; } 
+            QPushButton:hover { background-color: #00cc99; }
+        """)
         ok_btn.clicked.connect(self.close)
         layout.addWidget(ok_btn, 0, Qt.AlignmentFlag.AlignRight)
 
@@ -478,6 +561,7 @@ class CustomMessageBox(QWidget):
         path = QPainterPath()
         path.addRoundedRect(0, 0, self.width(), self.height(), 12, 12)
         painter.fillPath(path, Qt.GlobalColor.transparent)
+
 
 class CircularSpinner(QWidget):
     def __init__(self, parent=None):
@@ -501,35 +585,30 @@ class CircularSpinner(QWidget):
         pen.setColor(QColor("#00f0ff"))
         painter.setPen(pen)
         painter.drawArc(5, 5, 40, 40, -self.angle * 16, 100 * 16)
+
+
 class GitHubUpdateWorker(QThread):
     update_available_signal = pyqtSignal(str)
 
     def run(self):
         try:
-            req = urllib.request.Request(GITHUB_API_URL)
+            raw_url = "https://raw.githubusercontent.com/STERIAGAME/ScreenHDSteam/refs/heads/main/version.txt"
+            req = urllib.request.Request(raw_url)
             req.add_header('User-Agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36')
+            req.add_header('Cache-Control', 'no-cache, no-store, must-revalidate')
+            req.add_header('Pragma', 'no-cache')
+            req.add_header('Expires', '0')
             
             with urllib.request.urlopen(req, timeout=5) as response:
-                html_content = response.read().decode('utf-8')
-                server_version = ""
-                
-                if "V.5.0" in html_content or "v5.0" in html_content:
-                    server_version = "v5.0"
-                
-                if server_version:
-                    clean_local = GITHUB_CHECK_TAG.lower().replace("v", "").replace(".", "").strip()
-                    clean_server = server_version.lower().replace("v", "").replace(".", "").strip()
+                if response.status == 200:
+                    raw_data = response.read().decode('utf-8-sig')
+                    server_version_text = " ".join(raw_data.replace('\r', '').replace('\n', '').replace('\xa0', '').strip().lower().split())
+                    local_version_text = " ".join(VERSION.replace('\r', '').replace('\n', '').replace('\xa0', '').strip().lower().split())
                     
-                    if clean_server and clean_server != clean_local:
-                        self.update_available_signal.emit(GITHUB_RELEASE_URL)
-                else:
-                    if "5" in html_content:
+                    if server_version_text and server_version_text != local_version_text:
                         self.update_available_signal.emit(GITHUB_RELEASE_URL)
         except Exception:
             pass
-
-
-
 
 
 class AsyncScanWorker(QThread):
@@ -540,38 +619,52 @@ class AsyncScanWorker(QThread):
         self.hd_path = hd_path
         self.steam_path = steam_path
         self.mode = mode
+        self._is_cancelled = False
+
+    def cancel(self):
+        self._is_cancelled = True
 
     def run(self):
         matched = []
         thumbnails = {}
         if not self.steam_path or not os.path.exists(self.steam_path):
-            self.finished_signal.emit(matched, thumbnails)
+            if not self._is_cancelled:
+                self.finished_signal.emit(matched, thumbnails)
             return
 
         steam_files = {}
         for ext in ["*.jpg", "*.jpeg"]:
             for p in glob.glob(os.path.join(self.steam_path, ext)):
+                if self._is_cancelled:
+                    return
                 if "thumbnails" not in os.path.normpath(p).split(os.sep):
                     steam_files[os.path.basename(p)] = p
 
         hd_files = []
         if self.hd_path and os.path.exists(self.hd_path):
             for ext in ["*.jpg", "*.jpeg", "*.png", "*.avif"]:
+                if self._is_cancelled:
+                    return
                 hd_files.extend(glob.glob(os.path.join(self.hd_path, ext)))
                 hd_files.extend(glob.glob(os.path.join(self.hd_path, "**", ext), recursive=True))
 
         added = set()
         for h_path in hd_files:
+            if self._is_cancelled:
+                return
             h_filename = os.path.basename(h_path)
             h_name, _ = os.path.splitext(h_filename)
+            
+            clean_h_name = h_name
             if "_" in h_name:
                 parts = h_name.split("_")
                 if len(parts) > 1 and parts[0].isdigit():
-                    h_name = "_".join(parts[1:])
+                    clean_h_name = "_".join(parts[1:])
             
             for s_name, s_path in steam_files.items():
                 s_base, _ = os.path.splitext(s_name)
-                if s_base == h_name or s_base in h_name:
+                # Точное сопоставление имени или суффикса (без непредсказуемого 's_base in h_name')
+                if s_base == h_name or s_base == clean_h_name or h_name.endswith(f"_{s_base}"):
                     if s_name not in added:
                         matched.append((s_name, h_path, s_path))
                         added.add(s_name)
@@ -579,21 +672,29 @@ class AsyncScanWorker(QThread):
 
         if self.mode == "custom":
             for s_name, s_path in steam_files.items():
-                if s_name not in added: matched.append((s_name, "", s_path))
+                if s_name not in added:
+                    matched.append((s_name, "", s_path))
 
         try:
             matched.sort(key=lambda x: os.path.getmtime(x[2]) if (x and len(x) > 2 and os.path.exists(x[2])) else 0, reverse=True)
-        except Exception: pass
+        except Exception:
+            pass
 
+        # Безопасная загрузка через QImage в фоновом потоке
         for s_name, h_path, s_path in matched:
+            if self._is_cancelled:
+                return
             p_path = h_path if (self.mode == "auto" and h_path) else s_path
             if p_path and os.path.exists(p_path):
-                pix = QPixmap(p_path)
-                if not pix.isNull():
-                    scaled = pix.scaled(200, 115, Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation)
+                img = QImage(p_path)
+                if not img.isNull():
+                    scaled = img.scaled(200, 115, Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation)
                     thumbnails[s_name] = scaled
 
-        self.finished_signal.emit(matched, thumbnails)
+        if not self._is_cancelled:
+            self.finished_signal.emit(matched, thumbnails)
+
+
 class ScreenshotApp(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -606,15 +707,19 @@ class ScreenshotApp(QMainWindow):
         self.matched_screenshots = []
         self.thumbnail_pixmaps = {}
         self.selected_items = set()
+        self.card_widgets = {}
         self.current_mode = "auto"
         self._drag_position = QPoint()
+        self._is_dragging = False
         self.scan_in_progress = False
         self.worker = None
 
         png_path = resolve_resource_path(ICON_PNG_NAME)
         ico_path = resolve_resource_path(ICON_FILE_NAME)
-        if os.path.exists(png_path): self.setWindowIcon(QIcon(png_path))
-        elif os.path.exists(ico_path): self.setWindowIcon(QIcon(ico_path))
+        if os.path.exists(png_path):
+            self.setWindowIcon(QIcon(png_path))
+        elif os.path.exists(ico_path):
+            self.setWindowIcon(QIcon(ico_path))
 
         central_widget = QWidget(self)
         central_widget.setStyleSheet("""
@@ -644,6 +749,7 @@ class ScreenshotApp(QMainWindow):
         header_layout = QHBoxLayout(header)
         header_layout.setContentsMargins(20, 0, 20, 0)
         header_layout.setSpacing(10)
+        
         self.icon_lbl = QLabel(header)
         self.icon_lbl.setFixedSize(45, 45)
         self.icon_lbl.setStyleSheet("border: none; background: transparent;")
@@ -667,25 +773,21 @@ class ScreenshotApp(QMainWindow):
         title_lbl.setStyleSheet("color: white; font-size: 16px; font-weight: bold; background: transparent; border: none; margin-left: 5px;")
         header_layout.addWidget(title_lbl)
         
-        # Создаем компактный вертикальный контейнер без системных отступов
-        # Создаем компактный вертикальный контейнер без системных отступов
         version_layout = QVBoxLayout()
-        version_layout.setSpacing(0)  # Полностью убираем межстрочный интервал
-        version_layout.setContentsMargins(6, 0, 0, 0)  # Отступ только слева
+        version_layout.setSpacing(0)
+        version_layout.setContentsMargins(6, 0, 0, 0)
 
         self.version_lbl = QLabel(VERSION, header)
         self.version_lbl.setStyleSheet("color: #475569; font-size: 11px; font-weight: bold; background: transparent; border: none;")
         version_layout.addWidget(self.version_lbl)
 
-        self.update_status_lbl = QLabel("Требуется обновление", header)
+        self.update_status_lbl = QLabel(__("update_required"), header)
         self.update_status_lbl.setStyleSheet("color: #ffee00; font-size: 8px; font-weight: bold; background: transparent; border: none; margin-top: -1px;")
         self.update_status_lbl.setVisible(False)
         version_layout.addWidget(self.update_status_lbl)
 
-        # ИСПРАВЛЕНО: Только одна строка добавления с принудительным выравниванием по центру по вертикали
         header_layout.addLayout(version_layout, 0)
         header_layout.setAlignment(version_layout, Qt.AlignmentFlag.AlignVCenter)
-
         
         self.update_git_btn = QPushButton(header)
         self.update_git_btn.setFixedSize(20, 20)
@@ -737,21 +839,30 @@ class ScreenshotApp(QMainWindow):
         if os.path.exists(resolved_set_ico):
             settings_btn.setIcon(QIcon(resolved_set_ico))
             settings_btn.setIconSize(QSize(14, 14))
-        settings_btn.setStyleSheet("QPushButton { background-color: #1e293b; color: #94a3b8; font-weight: bold; padding: 6px 15px; border-radius: 4px; border: 1px solid #334155; outline: none; } QPushButton:hover { background-color: #334155; color: white; }")
+        settings_btn.setStyleSheet("""
+            QPushButton { background-color: #1e293b; color: #94a3b8; font-weight: bold; padding: 6px 15px; border-radius: 4px; border: 1px solid #334155; outline: none; } 
+            QPushButton:hover { background-color: #334155; color: white; }
+        """)
         settings_btn.clicked.connect(self.open_settings)
         header_layout.addWidget(settings_btn)
 
         min_btn = QPushButton("⎯", header)
         min_btn.setFixedSize(28, 28)
         min_btn.setFocusPolicy(Qt.FocusPolicy.NoFocus)
-        min_btn.setStyleSheet("QPushButton { color: #94a3b8; font-weight: bold; border: none; background: transparent; outline: none; } QPushButton:hover { background-color: #1e293b; border-radius: 4px; }")
+        min_btn.setStyleSheet("""
+            QPushButton { color: #94a3b8; font-weight: bold; border: none; background: transparent; outline: none; } 
+            QPushButton:hover { background-color: #1e293b; border-radius: 4px; }
+        """)
         min_btn.clicked.connect(self.showMinimized)
         header_layout.addWidget(min_btn)
 
         close_btn = QPushButton("✕", header)
         close_btn.setFixedSize(28, 28)
         close_btn.setFocusPolicy(Qt.FocusPolicy.NoFocus)
-        close_btn.setStyleSheet("QPushButton { color: #94a3b8; font-weight: bold; border: none; background: transparent; outline: none; } QPushButton:hover { background-color: #ef4444; color: white; border-radius: 4px; }")
+        close_btn.setStyleSheet("""
+            QPushButton { color: #94a3b8; font-weight: bold; border: none; background: transparent; outline: none; } 
+            QPushButton:hover { background-color: #ef4444; color: white; border-radius: 4px; }
+        """)
         close_btn.clicked.connect(self.close)
         header_layout.addWidget(close_btn)
         container_layout.addWidget(header)
@@ -774,6 +885,7 @@ class ScreenshotApp(QMainWindow):
         self.gallery_layout.setContentsMargins(20, 20, 20, 20)
         self.scroll_area.setWidget(self.gallery_widget)
         container_layout.addWidget(self.scroll_area)
+        
         footer = QFrame(central_widget)
         footer.setFixedHeight(70)
         footer.setStyleSheet("""
@@ -789,7 +901,10 @@ class ScreenshotApp(QMainWindow):
         self.action_btn = QPushButton(__("upgrade_btn"), footer)
         self.action_btn.setFixedHeight(45)
         self.action_btn.setFocusPolicy(Qt.FocusPolicy.NoFocus)
-        self.action_btn.setStyleSheet("QPushButton { background-color: #00f0ff; color: #07080a; font-weight: bold; font-size: 13px; border-radius: 6px; border: none; outline: none; } QPushButton:hover { background-color: #00cc99; }")
+        self.action_btn.setStyleSheet("""
+            QPushButton { background-color: #00f0ff; color: #07080a; font-weight: bold; font-size: 13px; border-radius: 6px; border: none; outline: none; } 
+            QPushButton:hover { background-color: #00cc99; }
+        """)
         self.action_btn.clicked.connect(self.execute_main_action)
         footer_layout.addWidget(self.action_btn, 1)
 
@@ -800,7 +915,10 @@ class ScreenshotApp(QMainWindow):
         if os.path.exists(resolved_ref_ico):
             self.refresh_btn.setIcon(QIcon(resolved_ref_ico))
             self.refresh_btn.setIconSize(QSize(14, 14))
-        self.refresh_btn.setStyleSheet("QPushButton { background-color: #ffee00; color: #07080a; font-weight: bold; border-radius: 6px; border: none; padding-left: 2px; outline: none; } QPushButton:hover { background-color: #cccc00; }")
+        self.refresh_btn.setStyleSheet("""
+            QPushButton { background-color: #ffee00; color: #07080a; font-weight: bold; border-radius: 6px; border: none; padding-left: 2px; outline: none; } 
+            QPushButton:hover { background-color: #cccc00; }
+        """)
         self.refresh_btn.clicked.connect(self.scan_screenshots)
         footer_layout.addWidget(self.refresh_btn)
         container_layout.addWidget(footer)
@@ -814,20 +932,14 @@ class ScreenshotApp(QMainWindow):
         self.update_worker.start()
 
     def on_update_found(self, release_url):
-        # Окрашиваем основную версию в желтый
         self.version_lbl.setStyleSheet("color: #ffee00; font-size: 11px; font-weight: bold; background: transparent; border: none;")
         self.version_lbl.style().unpolish(self.version_lbl)
         self.version_lbl.style().polish(self.version_lbl)
         self.version_lbl.update()
         
-        # Показываем текстовую подсказку снизу
         self.update_status_lbl.setVisible(True)
-        
-        # Показываем иконку и привязываем клик
         self.update_git_btn.setVisible(True)
         self.update_git_btn.clicked.connect(lambda: QDesktopServices.openUrl(QUrl(release_url)))
-
-
 
     def paintEvent(self, event):
         painter = QPainter(self)
@@ -838,13 +950,28 @@ class ScreenshotApp(QMainWindow):
 
     def mousePressEvent(self, event):
         if event.button() == Qt.MouseButton.LeftButton and event.position().y() < 65:
+            self._is_dragging = True
             self._drag_position = event.globalPosition().toPoint() - self.frameGeometry().topLeft()
             event.accept()
+        else:
+            self._is_dragging = False
 
     def mouseMoveEvent(self, event):
-        if event.buttons() == Qt.MouseButton.LeftButton and event.position().y() < 65:
-            self.move(event.globalPosition().toPoint() - self._drag_position)
+        if self._is_dragging:
+            new_position = event.globalPosition().toPoint() - self._drag_position
+            screen = QApplication.screenAt(QCursor.pos())
+            if screen:
+                screen_geo = screen.geometry()
+                new_x = max(screen_geo.x(), min(new_position.x(), screen_geo.right() - 100))
+                new_y = max(screen_geo.y(), min(new_position.y(), screen_geo.bottom() - 100))
+                self.move(new_x, new_y)
+            else:
+                self.move(new_position)
             event.accept()
+
+    def mouseReleaseEvent(self, event):
+        self._is_dragging = False
+        event.accept()
 
     def parent_scan_trigger(self):
         self.scan_screenshots()
@@ -853,11 +980,21 @@ class ScreenshotApp(QMainWindow):
         self.current_mode = mode
         self.selected_items.clear()
         if mode == "auto":
-            self.btn_auto_mode.setChecked(True); self.btn_custom_mode.setChecked(False)
-            self.action_btn.setText(__("upgrade_btn")); self.action_btn.setStyleSheet("QPushButton { background-color: #00f0ff; color: #07080a; font-weight: bold; border-radius: 6px; border: none; outline: none; } QPushButton:hover { background-color: #00cc99; }")
+            self.btn_auto_mode.setChecked(True)
+            self.btn_custom_mode.setChecked(False)
+            self.action_btn.setText(__("upgrade_btn"))
+            self.action_btn.setStyleSheet("""
+                QPushButton { background-color: #00f0ff; color: #07080a; font-weight: bold; border-radius: 6px; border: none; outline: none; } 
+                QPushButton:hover { background-color: #00cc99; }
+            """)
         else:
-            self.btn_auto_mode.setChecked(False); self.btn_custom_mode.setChecked(True)
-            self.action_btn.setText(__("custom_btn")); self.action_btn.setStyleSheet("QPushButton { background-color: #ffee00; color: #07080a; font-weight: bold; border-radius: 6px; border: none; outline: none; } QPushButton:hover { background-color: #cccc00; }")
+            self.btn_auto_mode.setChecked(False)
+            self.btn_custom_mode.setChecked(True)
+            self.action_btn.setText(__("custom_btn"))
+            self.action_btn.setStyleSheet("""
+                QPushButton { background-color: #ffee00; color: #07080a; font-weight: bold; border-radius: 6px; border: none; outline: none; } 
+                QPushButton:hover { background-color: #cccc00; }
+            """)
         self.scan_screenshots()
 
     def open_settings(self):
@@ -867,18 +1004,29 @@ class ScreenshotApp(QMainWindow):
     def resizeEvent(self, event):
         super().resizeEvent(event)
         if self.matched_screenshots and not self.scan_in_progress:
-            self.on_scan_finished(self.matched_screenshots, self.thumbnail_pixmaps)
+            new_columns = max(1, (self.width() - 40) // 235)
+            if getattr(self, '_current_columns', 0) != new_columns:
+                self.render_gallery()
 
     def scan_screenshots(self):
-        if self.scan_in_progress and self.worker:
-            self.worker.quit()
-            self.worker.wait()
+        # Безопасная неблокирующая отмена предыдущего потока
+        if self.worker and self.worker.isRunning():
+            self.worker.cancel()
+            try:
+                self.worker.finished_signal.disconnect()
+            except Exception:
+                pass
 
         self.scan_in_progress = True
+        self.selected_items.clear()
+        self.card_widgets.clear()
+        
         for i in reversed(range(self.gallery_layout.count())): 
             item = self.gallery_layout.itemAt(i)
-            if item.widget(): item.widget().deleteLater()
-            elif item.spacerItem(): self.gallery_layout.removeItem(item)
+            if item.widget():
+                item.widget().deleteLater()
+            elif item.spacerItem():
+                self.gallery_layout.removeItem(item)
             
         loading_frame = QWidget()
         loading_frame.setStyleSheet("border: none; background-color: #07080a;")
@@ -899,17 +1047,24 @@ class ScreenshotApp(QMainWindow):
         self.worker = AsyncScanWorker(self.hd_path, self.steam_path, self.current_mode)
         self.worker.finished_signal.connect(self.on_scan_finished)
         self.worker.start()
-    def on_scan_finished(self, matched, thumbnails):
+
+    def on_scan_finished(self, matched, thumbnail_images):
         self.scan_in_progress = False
         self.matched_screenshots = matched
-        self.thumbnail_pixmaps = thumbnails
-        
+        # Безопасная конвертация QImage в QPixmap на стороне основного потока GUI
+        self.thumbnail_pixmaps = {fn: QPixmap.fromImage(img) for fn, img in thumbnail_images.items()}
+        self.render_gallery()
+
+    def render_gallery(self):
+        self.card_widgets.clear()
         for i in reversed(range(self.gallery_layout.count())):
             item = self.gallery_layout.itemAt(i)
-            if item.widget(): item.widget().deleteLater()
-            elif item.spacerItem(): self.gallery_layout.removeItem(item)
+            if item.widget():
+                item.widget().deleteLater()
+            elif item.spacerItem():
+                self.gallery_layout.removeItem(item)
 
-        if not matched:
+        if not self.matched_screenshots:
             msg = __("msg_no_game") if not self.steam_path else __("msg_no_screenshots")
             empty_lbl = QLabel(msg)
             empty_lbl.setStyleSheet("color: #64748b; font-size: 13px; border: none; background: transparent;")
@@ -917,17 +1072,17 @@ class ScreenshotApp(QMainWindow):
             return
 
         columns = max(1, (self.width() - 40) // 235)
-        total_rows = (len(matched) + columns - 1) // columns
+        self._current_columns = columns
+        total_rows = (len(self.matched_screenshots) + columns - 1) // columns
 
-        for index, (filename, hd_path, steam_path) in enumerate(matched):
+        for index, (filename, hd_path, steam_path) in enumerate(self.matched_screenshots):
             row = index // columns
             col = index % columns
 
             item_frame = QFrame()
             item_frame.setFixedSize(220, 175)
-            border_color = "#ffee00" if filename in self.selected_items else "#1e293b"
-            bg_color = "#1a1c13" if filename in self.selected_items else "#0d0f12"
-            item_frame.setStyleSheet(f"QFrame {{ border: 1px solid {border_color}; background-color: {bg_color}; border-radius: 8px; }}")
+            self.card_widgets[filename] = item_frame
+            self.apply_card_style(filename)
             
             frame_layout = QVBoxLayout(item_frame)
             frame_layout.setContentsMargins(8, 8, 8, 8)
@@ -937,8 +1092,8 @@ class ScreenshotApp(QMainWindow):
             img_btn.setFixedSize(202, 115)
             img_btn.setFocusPolicy(Qt.FocusPolicy.NoFocus)
             img_btn.setStyleSheet("border: none; background: transparent; border-radius: 4px; outline: none;")
-            if filename in thumbnails:
-                img_btn.setIcon(QIcon(thumbnails[filename]))
+            if filename in self.thumbnail_pixmaps:
+                img_btn.setIcon(QIcon(self.thumbnail_pixmaps[filename]))
                 img_btn.setIconSize(QSize(200, 115))
             else:
                 img_btn.setText(__("file_error"))
@@ -952,9 +1107,12 @@ class ScreenshotApp(QMainWindow):
             if os.path.exists(resolved_vi_ico):
                 view_btn.setIcon(QIcon(resolved_vi_ico))
                 view_btn.setIconSize(QSize(12, 12))
-            view_btn.setStyleSheet("QPushButton { background-color: #1e293b; color: #00f0ff; font-weight: bold; font-size: 10px; border-radius: 4px; border: none; padding-left: 2px; outline: none; } QPushButton:hover { background-color: #334155; }")
+            view_btn.setStyleSheet("""
+                QPushButton { background-color: #1e293b; color: #00f0ff; font-weight: bold; font-size: 10px; border-radius: 4px; border: none; padding-left: 2px; outline: none; } 
+                QPushButton:hover { background-color: #334155; }
+            """)
             p_path = hd_path if (self.current_mode == "auto" and hd_path) else steam_path
-            view_btn.clicked.connect(lambda checked, p=p_path: os.startfile(p) if os.path.exists(p) else None)
+            view_btn.clicked.connect(lambda checked, p=p_path: os.startfile(p) if (p and os.path.exists(p)) else None)
             frame_layout.addWidget(view_btn)
 
             self.gallery_layout.addWidget(item_frame, row, col, Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft)
@@ -962,57 +1120,118 @@ class ScreenshotApp(QMainWindow):
         spacer = QSpacerItem(20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
         self.gallery_layout.addItem(spacer, total_rows, 0, 1, columns)
 
+    def apply_card_style(self, filename):
+        card = self.card_widgets.get(filename)
+        if card:
+            is_selected = filename in self.selected_items
+            border_color = "#ffee00" if is_selected else "#1e293b"
+            bg_color = "#1a1c13" if is_selected else "#0d0f12"
+            card.setStyleSheet(f"QFrame {{ border: 1px solid {border_color}; background-color: {bg_color}; border-radius: 8px; }}")
+
     def toggle_select(self, filename):
         if self.current_mode == "custom":
+            prev_items = list(self.selected_items)
             self.selected_items.clear()
             self.selected_items.add(filename)
+            for prev_fn in prev_items:
+                self.apply_card_style(prev_fn)
+            self.apply_card_style(filename)
         else:
-            if filename in self.selected_items: self.selected_items.remove(filename)
-            else: self.selected_items.add(filename)
-        self.on_scan_finished(self.matched_screenshots, self.thumbnail_pixmaps)
+            if filename in self.selected_items:
+                self.selected_items.remove(filename)
+            else:
+                self.selected_items.add(filename)
+            self.apply_card_style(filename)
 
     def execute_main_action(self):
         if not self.selected_items: 
             msg_box = CustomMessageBox(__("select_error"), __("select_warning"), self)
-            msg_box.show(); return
+            msg_box.show()
+            return
+
         if self.current_mode == "auto":
             success = 0
             for filename, hd_path, steam_path in self.matched_screenshots:
                 if filename in self.selected_items and hd_path:
                     if self.process_replacement(hd_path, steam_path, filename):
                         success += 1
-                        try: os.remove(hd_path)
-                        except Exception: pass
+                        try:
+                            os.remove(hd_path)
+                        except Exception:
+                            pass
             if success:
                 msg_box = CustomMessageBox(__("success_title"), __("success_msg").format(success), self)
                 msg_box.show()
                 self.scan_screenshots()
         else:
-            target_fn = next(iter(self.selected_items)) if self.selected_items else ""
+            if len(self.selected_items) != 1:
+                msg_box = CustomMessageBox(__("select_error"), __("select_single_warn"), self)
+                msg_box.show()
+                return
+
+            target_fn = next(iter(self.selected_items))
             steam_p = next((s for f, h, s in self.matched_screenshots if f == target_fn), "")
-            if not steam_p: return
-            custom_file, _ = QFileDialog.getOpenFileName(self, "Выберите файл для подмены", "", "Изображения (*.jpg *.png *.webp *.avif)")
+            if not steam_p:
+                return
+
+            custom_file, _ = QFileDialog.getOpenFileName(
+                self, 
+                __("choose_custom_file"), 
+                "", 
+                __("image_files_filter")
+            )
             if custom_file and self.process_replacement(custom_file, steam_p, target_fn):
                 msg_box = CustomMessageBox(__("success_title"), __("success_msg").format(1), self)
                 msg_box.show()
                 self.scan_screenshots()
 
     def process_replacement(self, src, dest, filename):
+        if not PIL_AVAILABLE:
+            msg_box = CustomMessageBox(__("file_error"), __("pillow_missing"), self)
+            msg_box.show()
+            return False
+
         try:
-            from PIL import Image
             img = Image.open(src)
-            if img.mode in ("RGBA", "P"): img = img.convert("RGB")
-            if os.path.exists(dest): os.remove(dest)
-            img.save(dest, "JPEG", quality=100, subsampling=0)
+            if img.mode in ("RGBA", "P"):
+                img = img.convert("RGB")
+
+            dest_dir = os.path.dirname(dest)
+            os.makedirs(dest_dir, exist_ok=True)
             
-            t_path = os.path.join(os.path.dirname(dest), "thumbnails", filename)
-            if os.path.exists(t_path): os.remove(t_path)
-            else: os.makedirs(os.path.dirname(t_path), exist_ok=True)
-            
-            t_img = img.copy(); t_img.thumbnail((400, 250))
-            t_img.save(t_path, "JPEG", quality=90)
+            # Атомарное сохранение основного файла через .tmp
+            temp_dest = dest + ".tmp"
+            img.save(temp_dest, "JPEG", quality=100, subsampling=0)
+            if os.path.exists(temp_dest):
+                if os.path.exists(dest):
+                    try:
+                        os.remove(dest)
+                    except Exception:
+                        pass
+                os.replace(temp_dest, dest)
+
+            # Атомарное сохранение миниатюры
+            t_dir = os.path.join(dest_dir, "thumbnails")
+            os.makedirs(t_dir, exist_ok=True)
+            t_path = os.path.join(t_dir, filename)
+            temp_t_path = t_path + ".tmp"
+
+            t_img = img.copy()
+            t_img.thumbnail((400, 250))
+            t_img.save(temp_t_path, "JPEG", quality=90)
+            if os.path.exists(temp_t_path):
+                if os.path.exists(t_path):
+                    try:
+                        os.remove(t_path)
+                    except Exception:
+                        pass
+                os.replace(temp_t_path, t_path)
+
             return True
-        except Exception: return False
+        except Exception as e:
+            msg_box = CustomMessageBox(__("file_error"), f"{__('process_error')}<br><br><small>{str(e)}</small>", self)
+            msg_box.show()
+            return False
 
 
 if __name__ == "__main__":
