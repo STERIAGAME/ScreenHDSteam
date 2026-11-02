@@ -1,163 +1,293 @@
 # <img src="iconShdS.png" width="400" height="400" align="center">ScreenHDSteam Studio - RU
 
 
-### ⚡ ScreenHDSteam Studio v4.1 - Перерождение на PyQt6 и Загрузка своих скриншотов
+# 📸 ScreenHDSteam Studio - Безупречное качество ваших скриншотов Steam
+### Релиз: v4.2 Major Update (FREE)
 
-Рад представить масштабное обновление ScreenHDSteam Studio v4.1! В этом релизе полностью переписал графическое ядро программы. Отказался от старого фреймворка CustomTkinter в пользу профессионального и производительного PyQt6. Приложение стало значительно быстрее, стабильнее и обзавелось функциями, которые сделают работу со скриншотами Steam максимально комфортной.
-
-Все необходимые графические ресурсы и новые иконки теперь полностью зашиты внутрь исполняемого файла. Приложение поставляется в виде одного монолитного файла формата EXE и готово к работе сразу после запуска.
-
----
-
-### 🌟 Ключевые изменения и новые возможности
-
-🔷 Полный переход на PyQt6
-Графический каркас приложения полностью заменен. Это позволило внедрить глубокую темную тему, плавную анимацию загрузки, идеальное сглаживание миниатюр. Мы смогли полностью избавиться от скрытых багов отображения окон, свойственных старой библиотеке.
-
-🌐 Автоматическая локализация (RU / EN)
-Программа получила полноценную двуязычную поддержку. При запуске скрипт самостоятельно определяет язык вашей операционной системы. Он мгновенно переводит весь интерфейс, системные уведомления и диалоговые окна на русский или английский язык.
-
-🔄 Умная система проверки обновлений
-Внедрен асинхронный сетевой воркер, который в фоновом режиме бережно проверяет появление новых версий в репозитории GitHub. Процесс абсолютно автономен, не вызывает зависаний интерфейса и работает даже при нестабильном интернет-соединении.
-
-🎨 Динамический инфо-индикатор в шапке
-Если на сервере появится новая версия, номер сборки в верхнем меню мгновенно окрасится в ярко-желтый цвет. Под ним активируется аккуратный статус-текст «Требуется обновление», а рядом загорится кликабельная иконка со стрелочкой. Она в один клик перенаправит вас на страницу загрузки релиза.
-
-📸 Новый режим: Кастомная замена
-В дополнение к автоматическому умному сопоставлению добавлен полностью ручной режим. Теперь вы можете кликнуть на любой скриншот Steam в галерее и принудительно заменить его абсолютно любым графическим файлом с вашего компьютера. Поддерживаются форматы JPG, PNG, WEBP, AVIF.
-
-🖼 Премиальный пак встроенных графических иконок
-Текстовые эмодзи на кнопках остались в прошлом. Все элементы управления (Настройки, Обновить, Просмотр, Переключение режимов) получили собственные минималистичные PNG-иконки высокого разрешения. Они теперь вшиты напрямую в тело программы и идеально сочетаются с неоновым стилем интерфейса.
+> **Забудьте о «мыле», артефактах и бандинге в профиле Steam.**  
+> Превратите вашу галерею Steam в настоящую выставку скриншотов без потери исходного качества!
 
 ---
 
-### 🛠 Исправления дефектов и оптимизация стабильности
+## 🔍 В чем проблема скриншотов Steam?
 
-* Фиксация выпадающего списка игр: Исправлен критический баг позиционирования меню выбора игр в настройках. Теперь при перемещении окна настроек по экрану выпадающий список больше не улетает и остается намертво привязанным к своему полю.
-* Ликвидация серых рамок фокуса: Устранен визуальный дефект операционной системы Windows, при котором вокруг кликнутых кнопок появились серые пунктирные контуры фокуса ввода. Элементам прописано принудительное зануление контуров.
-* Защита от сбоев при чтении конфигурации: Переписана логика парсинга строк файла config.txt с жестким контролем индексов данных. Это полностью исключает падение программы при повреждении конфигурационного файла.
-* Улучшенный парсинг цифровых префиксов: Изменена логика сопоставления названий файлов в асинхронном сканере. Карточки скриншотов Steam, чьи имена начинаются со сложных числовых ID, теперь обрабатываются без сбоев.
-* Монолитная EXE-сборка: Все пути к графическим ассетам и иконкам оптимизированы для компиляции через PyInstaller. Ресурсы запечатаны внутри исполняемого файла и автоматически извлекаются в систему при старте.
+Многие геймеры и виртуальные фотографы сталкиваются с разочарованием:
+1. Вы делаете потрясающий кадр в 2K/4K с включенным рейтрейсингом (клавиша `F12`).
+2. В настройках Steam у вас даже включена галочка **«Сохранять несжатую копию»**.
+3. **Но есть подвох:** Steam сохраняет чистый несжатый файл (PNG/TIF/JPG) в отдельную произвольную папку на диске, а для самого клиента и облака Steam Cloud использует **пережатый JPEG низкого качества**.
+4. В результате при публикации кадра в ленту активности, иллюстрации или витрину профиля цвета становятся блеклыми, темные участки покрываются «лесенками» (бандингом), а мелкие текстуры размываются.
+
+#### Почему это сложно исправить вручную?
+Каждая игра хранит скриншоты в изолированных каталогах с цифровыми идентификаторами:  
+`...\userdata\<SteamID>\760\remote\<AppID>\screenshots`  
+Чтобы подменить файл вручную, вам нужно:
+* Найти нужный `AppID` игры.
+* Переименовать исходник в точное имя файла Steam (с миллисекундным таймстампом).
+* Пересохранить его в строгом формате.
+* Создать уменьшенную копию (миниатюру) с правильными пропорциями в скрытую подпапку `thumbnails/`.
+
+**ScreenHDSteam Studio делает все это за вас в один клик.**
 
 ---
 
-### 📦 Инструкция по установке и обновлению
+## ⚙️ Как работает ScreenHDSteam Studio под капотом
 
-1. Скачайте свежий исполнительный файл ScreenHDSteam.exe из вложений ниже.
-2. Запустите приложение и наслаждайтесь качественными HD-кадрами в вашем профиле Steam!
+1. **Анализ библиотек Steam:** утилита считывает системный реестр Windows и файлы конфигураций (`config.vdf`, `libraryfolders.vdf`), обнаруживая все ваши игровые библиотеки на дисках.
+2. **Синхронизация по отпечаткам кадров:** программа анализирует папку с исходными HD-копиями и папку скриншотов конкретной игры, находя совпадения по временным меткам и именам файлов.
+3. **Бескомпромиссная конвертация:** оригинальный кадр переводится в JPEG со 100% качеством и субдискретизацией `subsampling=0` (полная цветовая четкость 4:4:4, без урезания цветовых каналов, присущего алгоритмам Steam).
+4. **Генерация правильных Thumbnails:** алгоритм автоматически вычисляет пропорции и генерирует четкую превью-миниатюру в подкаталог `thumbnails/`, благодаря чему оверлей Steam и менеджер скриншотов не «ломаются» и отображают кадры корректно.
+5. **Безопасная атомарная замена:** запись идет через временные буферы `.tmp`. Даже при внезапном отключении питания ваши оригинальные файлы останутся в целости.
 
 ---
 
-### 💻 Развертывание и компиляция для разработчиков
+## 🚀 Что нового в версии v4.2 FREE
 
-Если вы хотите запустить проект из исходного кода или самостоятельно скомпилировать монолитный исполняемый файл, используйте следующую инструкцию.
+* **⚡ Полностью асинхронный многопоточный сканер (`QThread`):** приложение больше не «подвисает» при сканировании библиотек с тысячами скриншотов и объемными 4K-кадрами.
+* **🎯 Умный парсинг имен:** улучшен алгоритм сопоставления кадров. Теперь поддерживаются скриншоты с числовыми префиксами AppID и модифицированными именами.
+* **🎨 Новый неоновый UI на PyQt6:** полностью кастомный темный интерфейс (Frameless Window) с плавной прокруткой, анимацией загрузки и адаптивной галереей (карточки автоматически подстраиваются под ширину окна).
+* **🔄 Режим кастомной замены (Custom Mode):** теперь можно не просто апгрейдить скриншоты, сделанные на F12, а подменить любой скучный кадр на внешнюю работу (обработанный арт из Photoshop, снимок через NVIDIA Ansel, фоторежим игры и т.д.).
+* **🌐 Мультиязычность (RU / EN):** язык интерфейса определяется автоматически по региональным настройкам вашей системы.
+* **🧹 Очистка дубликатов:** опция автоматического удаления тяжелых несжатых оригиналов после успешной замены, освобождающая гигабайты на вашем SSD.
 
-Установка необходимых зависимостей:
+---
+
+## 💎 Сравнение версий: Free (GitHub) и Pro (Boosty)
+
+Бесплатная версия предоставляет весь базовый функционал для ручной работы. Для тех, кто ценит максимальный комфорт и полную автоматизацию, доступна **Pro-версия**:
+
+| Возможность | Free v4.2 (GitHub) | Pro v4.4+ (Boosty) |
+| :--- | :---: | :---: |
+| Ручной апгрейд пачки скриншотов в HD | ✅ | ✅ |
+| Кастомная замена кадра на любой внешний файл | ✅ | ✅ |
+| Очистка несжатых оригиналов после замены | ✅ | ✅ |
+| **Фоновая авто-замена на лету прямо во время игры** | ❌ | ✅ *(QFileSystemWatcher)* |
+| **Автоопределение запущенной игры через процессы Windows** | ❌ | ✅ *(psutil / tasklist)* |
+| **Встроенный просмотрщик с зумом, колесиком и инфой о MB** | ❌ | ✅ *(без сторонних программ)* |
+| **Фильтр «Только установленные игры» по .acf манифестам** | ❌ | ✅ |
+| **Отображение оригинальных иконок игр в меню выбора** | ❌ | ✅ |
+| **Кастомные Toast-уведомления с превью кадра (4 угла экрана)** | ❌ | ✅ |
+| **Аудио-отклик об успешной замене (встроенный футуристичный синтезатор)** | ❌ | ✅ |
+| **Работа из системного трея и автозапуск с Windows** | ❌ | ✅ *(через планировщик)* |
+
+👉 **[Получить Pro-версию и поддержать проект на Boosty](https://boosty.to/steriagame)**
+
+---
+
+## 📌 ВАЖНОЕ ОБЪЯВЛЕНИЕ: Статус бесплатной версии (Free)
+
+Версия **v4.2 FREE является финальным функциональным релизом** открытой ветки. 
+* Программа полностью стабильна, автономна и закрывает все базовые потребности ручной синхронизации скриншотов.
+* **Бесплатная версия больше не будет получать новые функции и крупные обновления.**
+* Все дальнейшие технические новшества, интеграции, фоновые алгоритмы и функции автоматизации будут развиваться и выходить исключительно в рамках **Pro-версии на Boosty**.
+
+---
+
+## 🤖 О разработке проекта: Человек + Искусственный Интеллект
+
+Этот проект - наглядный пример того, на что способны современные технологии при правильном подходе. 
+
+**Весь исходный код, архитектура приложения, логика многопоточности, алгоритмы парсинга библиотек Steam и стилизованный UI были полностью спроектированы и написаны мной в тесном сотрудничестве с Искусственным Интеллектом (Нейросетью).**
+
+ИИ выступил в роли соавтора, системного инженера и архитектора:
+* Помог выстроить безопасную работу с памятью и графикой в PyQt6.
+* Написал многопоточные воркеры и парсеры реестра Windows без вызова тяжелых внешних зависимостей.
+* Помог реализовать чистую математику для аудио-синтезатора волн и системы шифрования.
+
+Это доказательство того, что с помощью ИИ сегодня можно воплощать полезные, узкоспециализированные и качественные инструменты для сообщества с нуля!
+
+---
+
+---
+
+### 🛠️ Инструкция для разработчиков и сборка билда (Free v4.2)
+
+Если вы хотите запустить проект из исходного кода или собрать собственный чистый исполняемый `.exe`-файл:
+
+#### 1. Подготовка окружения
+* Убедитесь, что установлен **Python 3.10+** (с добавлением в системный PATH).
+* Склонируйте репозиторий и перейдите в папку с проектом:
+  ```bash
+  git clone https://github.com/STERIAGAME/ScreenHDSteam.git
+  cd ScreenHDSteam
+  ```
+
+#### 2. Установка зависимостей
 ```bash
-pip install PyQt6 pillow pyinstaller
+pip install PyQt6 Pillow pyinstaller
+```
+*(Опционально для чтения формата AVIF: `pip install pillow-heif`)*
+
+#### 3. Запуск в режиме разработки
+```bash
+python ScreenHDSteam.py
 ```
 
-Инструкция по компиляции монолитного EXE-файла:
-Чтобы все графические иконки интерфейса, логотипы и файлы ресурсов корректно упаковались внутрь одного исполняемого файла и не требовали внешних папок, сборка должна выполняться строго из корневой директории проекта через PyInstaller с флагами принудительного включения данных:
+#### 4. Компиляция в standalone `.exe` через PyInstaller
+Чтобы упаковать скрипт и все графические ресурсы в единый портативный исполняемый файл без консольного окна, выполните команду в корне проекта:
 
 ```bash
-# 1. Перейдите в корневую папку вашего проекта
-cd C:\Users\Ivan\Desktop\ScreenHDSteam
-
-# 2. Выполните команду сборки (все ассеты из папки Debug будут вшиты в корень временной директории _MEIPASS)
-python -m PyInstaller --noconsole --onefile --icon="Debug/iconShdS.ico" --add-data "Debug/btn_settings.png;." --add-data "Debug/btn_refresh.png;." --add-data "Debug/btn_view.png;." --add-data "Debug/btn_mode_auto.png;." --add-data "Debug/btn_mode_custom.png;." --add-data "Debug/btn_update_git.png;." --add-data "Debug/iconShdS.png;." Debug/ScreenHDSteam.py
+pyinstaller --noconsole --onefile --icon=iconShdS.ico --add-data "iconShdS.ico;." --add-data "iconShdS.png;." --add-data "btn_settings.png;." --add-data "btn_refresh.png;." --add-data "btn_view.png;." --add-data "btn_mode_auto.png;." --add-data "btn_mode_custom.png;." --add-data "btn_update_git.png;." ScreenHDSteam.py
 ```
 
-Готовый автономный файл ScreenHDSteam.exe появится в автоматически созданной папке dist в корне вашего проекта.
+* **`--noconsole`** - отключает окно командной строки при запуске GUI.
+* **`--onefile`** - собирает приложение в один переносимый `.exe`.
+* **`--icon=iconShdS.ico`** - устанавливает иконку для файла приложения.
+* **`--add-data "файл;."`** - вшивает графику интерфейса внутрь исполняемого пакета.
 
-## 📜 Лицензия и Статус проекта
-* Проект распространяется под открытой лицензией **MIT License**. Вы можете свободно модифицировать и распространять этот код.
-* **Текущий статус:** Проект успешно завершен и доведен до стабильного состояния. Глобальное обновление версии 3.0 принесло стопроцентную автоматизацию поиска путей Steam и исправило все известные баги интерфейса. 
-Утилита полностью решает поставленные задачи, поэтому активное расширение функционала не планируется, однако автор оставляет за собой возможность выпускать технические исправления и патчи в будущем при необходимости.
-* *Built with ❤️ and AI assistance.* Логика, архитектура глубокого поиска и графический интерфейс спроектированы в соавторстве с ИИ по техническому заданию автора.
+#### 5. Результат сборки
+Готовый бинарник будет сформирован в подкаталоге **`dist`**:
+```text
+ScreenHDSteam/
+└── dist/
+    └── ScreenHDSteam.exe   <-- Готовая к запуску программа
+```
+
+---
+*Создано для игрового комьюнити и ценителей качественных кадров. Спасибо за поддержку проекта!*
 
 
 # <img src="iconShdS.png" width="400" height="400" align="center">ScreenHDSteam Studio - ENG
 
 
-# ⚡ ScreenHDSteam Studio v4.1 — Reborn on PyQt6 & Custom Screenshot Uploads
+# 📸 ScreenHDSteam Studio — Flawless Quality for Your Steam Screenshots
+### Release: v4.2 Major Update (FREE)
 
-I am excited to present a major update: **ScreenHDSteam Studio v4.1**! In this release, the application's graphical core has been completely rewritten. I migrated from the old CustomTkinter framework to the professional and high-performance **PyQt6**. 
-
-The application is now significantly faster and more stable, packed with new features to make managing your Steam screenshots as seamless as possible.
-
-### 🌟 What's New
-* **PyQt6 Transition:** Complete core rewrite for better UI rendering, snappier animations, and lower resource consumption.
-* **Custom Backgrounds:** Added support for custom replacements and custom screenshot uploads.
-* **Embedded Assets:** All required graphical assets and new icons are now fully embedded directly into the executable.
-* **Portable EXE:** The application is distributed as a single, standalone EXE file and is ready to use right out of the box.
-
+> **Forget about blurry shots, compression artifacts, and color banding on your Steam profile.**  
+> Turn your Steam gallery into a true high-resolution showcase without losing original visual fidelity!
 
 ---
 
-### 🌟 Key Changes and New Features
+## 🔍 What is the problem with Steam screenshots?
 
-🔷 Complete Shift to PyQt6
-The graphical backbone of the application has been completely replaced. This transition brings a deep dark theme, fluid scanning animations, flawless thumbnail smoothing. It eliminates hidden rendering bugs common to the legacy library.
+Many gamers and virtual photographers run into the same frustrating issue:
+1. You capture a breathtaking shot in 2K/4K with ray tracing enabled (via `F12`).
+2. You even have the **"Save an uncompressed copy"** option checked in your Steam settings.
+3. **Here is the catch:** Steam dumps that clean, uncompressed file (PNG/TIF/JPG) into a separate, isolated folder on your drive, while the Steam client and Steam Cloud continue to use a **heavily compressed, low-quality JPEG**.
+4. As a result, when you publish your capture to your activity feed, artwork section, or profile showcase, colors look washed out, dark areas suffer from ugly color banding, and fine textures turn into a blurry mess.
 
-🌐 Automatic Localization (RU / EN)
-The program now features native bilingual support. Upon startup, the script automatically detects your operating system language. It instantly localizes the interface, system alerts, and dialog boxes to Russian or English.
+#### Why is fixing this manually such a headache?
+Every game stores screenshots in isolated directories with numeric identifiers:  
+`...\userdata\<SteamID>\760\remote\<AppID>\screenshots`  
+To replace a file manually, you would have to:
+* Look up the specific game `AppID`.
+* Rename your source file to match the exact Steam filename (down to the millisecond timestamp).
+* Re-encode it into strict formatting parameters.
+* Generate a proper downscaled thumbnail with exact aspect ratios in the hidden `thumbnails/` subfolder (otherwise, Steam will refuse to load it).
 
-🔄 Smart Update Verification System
-An asynchronous network worker now runs quietly in the background to seamlessly check for new releases in the GitHub repository. This process is fully autonomous, does not freeze the interface, and remains robust even on unstable internet connections.
-
-🎨 Dynamic Header Status Indicator
-When a new version drops on the server, the build number in the top menu instantly highlights in bright neon yellow. An elegant status line reading “Update Required” activates underneath, and a clickable icon appears to redirect you to the release download page in a single click.
-
-📸 New Feature: Custom Replacement
-In addition to the automatic smart matching algorithm, we have added a fully manual replacement mode. You can now click on any Steam screenshot in your gallery and force-replace it with absolutely any image file from your computer. JPG, PNG, WEBP, and AVIF formats are supported.
-
-🖼 Premium Embedded Icon Pack
-Text emojis on buttons are a thing of the past. All interface controls (Settings, Refresh, View, Mode Toggles) received their own high-resolution minimalist PNG icons. They are compiled directly into the binary file and match the neon layout style flawlessly.
-
----
-
-### 🛠 Bug Fixes and Stability Optimizations
-
-* Locked Game Selection Dropdown: Fixed a critical positioning bug with the game choice menu in settings. Moving the configuration window across the screen no longer causes the dropdown list to fly out of bounds, keeping it perfectly pinned to its field.
-* Eliminated Gray Focus Outlines: Resolved a visual glitch in Windows where clicking on buttons would generate a dotted gray focus border around them. Elements now enforce a strict non-focus outline rule.
-* Corrupted Configuration Protection: Rewrote the file parsing logic for config.txt with strict array bounds checks. This prevents application crashes even if the underlying text settings become malformed.
-* Enhanced Numerical Prefix Parsing: Improved the image comparison architecture within the asynchronous scanner. Steam screenshot assets starting with complex numerical AppID prefixes are now cross-referenced seamlessly.
-* Monolithic EXE Deployment: All asset and asset tree lookup variables have been optimized for PyInstaller. Resources are encapsulated entirely within the binary and extract on the fly upon initialization.
+**ScreenHDSteam Studio automates this entire pipeline in a single click.**
 
 ---
 
-### 📦 Installation & Upgrade Instructions
+## ⚙️ How ScreenHDSteam Studio works under the hood
 
-1. Download the latest executable file ScreenHDSteam.exe from the assets section below.
-2. Run the application and enjoy pristine uncompressed HD captures right in your Steam profile!
+1. **Steam Library Discovery:** Scans the Windows Registry and Steam configuration files (`config.vdf`, `libraryfolders.vdf`), automatically discovering all Steam game libraries across any drive.
+2. **Fingerprint Matching:** Analyzes your uncompressed HD folder alongside the game's Steam screenshot directory, finding exact pairs via timestamps and file naming conventions.
+3. **Uncompromised Conversion:** Re-encodes the original capture into JPEG at 100% quality with zero chroma subsampling (`subsampling=0` / full 4:4:4 color reproduction), eliminating the color degradation typical of Steam's native compression.
+4. **Thumbnail Generation:** Automatically calculates aspect ratios and generates pixel-perfect thumbnails inside the `thumbnails/` subfolder, ensuring the Steam overlay and screenshot manager display them seamlessly.
+5. **Safe Atomic Replacement:** Writes files via `.tmp` staging buffers first, preventing file corruption or data loss even in the event of an unexpected crash or power loss.
 
 ---
 
-### 💻 Developer Guide: Compilation & Deployment
+## 🚀 What's New in v4.2 FREE
 
-Follow these instructions if you wish to run the application from source code or compile the standalone executable with all embedded assets manually.
+* **⚡ Fully Asynchronous Multithreaded Scanner (`QThread`):** The UI stays completely fluid and responsive, even when indexing massive galleries filled with heavy 4K captures.
+* **🎯 Smarter Filename Parsing:** Enhanced matching algorithms that accurately link captures featuring custom prefixes, timestamps, or AppID tags.
+* **🎨 Modern Neon UI (PyQt6):** A sleek, frameless dark theme featuring smooth scrolling, an animated loading spinner, and an adaptive gallery grid that scales automatically with window resizing.
+* **🔄 Custom Replacement Mode:** Replace any Steam screenshot with completely arbitrary external files (Photoshop edits, NVIDIA Ansel captures, photo-mode renders, or custom art).
+* **🌐 Multi-Language Support (EN / RU):** Automatically detects your system language upon launch.
+* **🧹 Duplicate Cleanup:** An optional toggle to delete heavy uncompressed originals after a successful upgrade, freeing up valuable space on your SSD.
 
-Prerequisite Installation:
+---
+
+## 💎 Version Comparison: Free (GitHub) vs. Pro (Boosty)
+
+The Free version provides a complete manual workflow. For users seeking seamless, real-time background automation without manual clicking, the **Pro version** is available:
+
+| Feature | Free v4.2 (GitHub) | Pro v4.4+ (Boosty) |
+| :--- | :---: | :---: |
+| Batch upgrade screenshots to HD manually | ✅ | ✅ |
+| Custom replacement with any external image | ✅ | ✅ |
+| Delete uncompressed originals after replacement | ✅ | ✅ |
+| **Real-time background auto-upgrade while gaming** | ❌ | ✅ *(QFileSystemWatcher)* |
+| **Automatic active game detection via running processes** | ❌ | ✅ *(psutil / tasklist)* |
+| **Built-in viewer with zoom, mouse wheel pan & file info** | ❌ | ✅ *(no third-party apps needed)* |
+| **"Installed Games Only" filter based on `.acf` manifests** | ❌ | ✅ |
+| **Display native game icons inside the selector menu** | ❌ | ✅ |
+| **Custom neon toast notifications with capture previews** | ❌ | ✅ *(4 selectable screen corners)* |
+| **Futuristic audio chime on successful upgrade** | ❌ | ✅ *(synthesized audio + volume slider)* |
+| **Minimize to system tray & start with Windows** | ❌ | ✅ *(via Windows Task Scheduler)* |
+
+👉 **[Support the developer & get the Pro version on Boosty](https://boosty.to/steriagame)**
+
+---
+
+## 📌 IMPORTANT NOTICE: Status of the Free Version
+
+Version **v4.2 FREE is the final feature release** for the open-source branch of the project.
+* The Free edition is fully stable, standalone, complete, and ready for daily use.
+* **The Free version will no longer receive new feature additions or major updates.**
+* All future feature development, background watcher improvements, and advanced automation workflows will be released exclusively as part of the **Pro version on Boosty**.
+
+---
+
+## 🤖 About Development: Human + Artificial Intelligence
+
+This project stands as a practical showcase of what modern technologies can achieve when built through close human-machine synergy.
+
+**The entire codebase, software architecture, multithreading logic, Steam library parsers, and custom UI design were engineered and written by me in close collaboration with Artificial Intelligence.**
+
+AI acted as a co-creator, systems engineer, and architect throughout development:
+* Designing safe memory and graphics handling routines in PyQt6.
+* Implementing multithreaded workers and native Windows Registry parsers without heavy third-party bloat.
+* Calculating the pure math for the real-time PCM audio chime synthesizer and hardware encryption layer.
+
+It serves as proof that with the right workflow, developers and AI can build polished, specialized, and impactful tools for the community from the ground up!
+
+---
+
+### 🛠️ Developer Guide & Build Instructions (Free v4.2)
+
+If you would like to run the project from source or compile your own clean standalone `.exe`:
+
+#### 1. Environment Setup
+* Ensure **Python 3.10+** is installed (and added to your system `PATH`).
+* Clone the repository and navigate into the project directory:
+  ```bash
+  git clone https://github.com/STERIAGAME/ScreenHDSteam.git
+  cd ScreenHDSteam
+  ```
+
+#### 2. Install Dependencies
 ```bash
-pip install PyQt6 pillow pyinstaller
+pip install PyQt6 Pillow pyinstaller
+```
+*(Optional, to support AVIF/HEIC formats: `pip install pillow-heif`)*
+
+#### 3. Run in Development Mode
+```bash
+python ScreenHDSteam.py
 ```
 
-Monolithic EXE Compilation Instructions:
-To guarantee that all interface graphics, brand assets, and resource paths pack correctly inside a single binary without requiring external folders, execution must occur directly from your project's root folder utilizing PyInstaller with active data mapping flags:
+#### 4. Compile to Standalone `.exe` via PyInstaller
+To bundle the script and all required UI assets into a single portable binary without an attached console window, run:
 
 ```bash
-# 1. Switch to your active project directory
-cd C:\Users\Ivan\Desktop\ScreenHDSteam
-
-# 2. Run the PyInstaller compilation command (all Debug assets will map to the root of the temporary _MEIPASS folder)
-python -m PyInstaller --noconsole --onefile --icon="Debug/iconShdS.ico" --add-data "Debug/btn_settings.png;." --add-data "Debug/btn_refresh.png;." --add-data "Debug/btn_view.png;." --add-data "Debug/btn_mode_auto.png;." --add-data "Debug/btn_mode_custom.png;." --add-data "Debug/btn_update_git.png;." --add-data "Debug/iconShdS.png;." Debug/ScreenHDSteam.py
+pyinstaller --noconsole --onefile --icon=iconShdS.ico --add-data "iconShdS.ico;." --add-data "iconShdS.png;." --add-data "btn_settings.png;." --add-data "btn_refresh.png;." --add-data "btn_view.png;." --add-data "btn_mode_auto.png;." --add-data "btn_mode_custom.png;." --add-data "btn_update_git.png;." ScreenHDSteam.py
 ```
 
-Your compiled, standalone binary file ScreenHDSteam.exe will be ready inside the freshly generated dist folder located in your root project directory.
+* **`--noconsole`** — Hides the command-line prompt window when launching the GUI.
+* **`--onefile`** — Packages the interpreter, dependencies, and code into a single binary.
+* **`--icon=iconShdS.ico`** — Embeds the official icon into the executable file.
+* **`--add-data "file;."`** — Packs UI sprite resources directly inside the portable package.
 
-## 📜 License and Project Status
-* The project is distributed under the open **MIT License**. You are free to modify and distribute this source code.
-* **Current Status:** The project is successfully completed and brought to a stable release state. The global version 3.0 update brought one hundred percent automation to Steam path discovery and resolved all known interface bugs. The utility resolves the designated tasks fully, meaning active feature expansion is not planned, though the author retains the option to release technical fixes and maintenance patches in the future if necessary.
-* *Built with ❤️ and AI assistance.* The logic, deep intersection NTFS cache search architecture, and graphical interface were designed in collaboration with AI based on the technical specifications of the author.
+#### 5. Output Directory
+Once the compilation finishes, your standalone executable will be located in the **`dist`** subfolder:
+```text
+ScreenHDSteam/
+└── dist/
+    └── ScreenHDSteam.exe   <-- Ready-to-run standalone program
+```
+The temporary `build/` directory and `.spec` file can be safely removed after compilation.
 
+---
+*Built with care for the gaming community and virtual photography enthusiasts. Thank you for your support!*
