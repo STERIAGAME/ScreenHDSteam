@@ -51,25 +51,27 @@
 
 ---
 
-## 💎 Сравнение версий: Free (GitHub) и Pro (Boosty)
+## 💎 Сравнение версий: Free (v4.2) и Pro (v4.4.1)
 
-Бесплатная версия предоставляет весь базовый функционал для ручной работы. Для тех, кто ценит максимальный комфорт и полную автоматизацию, доступна **Pro-версия**:
+Бесплатная версия предоставляет весь необходимый базовый функционал для ручной работы. Для тех, кто ценит максимальный комфорт, автоматизацию и полный контроль над процессом, разработана **Pro-версия**:
 
-| Возможность | Free v4.2 (GitHub) | Pro v4.4+ (Boosty) |
+| Возможность / Функция | Free v4.2 (GitHub) | Pro v4.4.1 (Boosty) |
 | :--- | :---: | :---: |
 | Ручной апгрейд пачки скриншотов в HD | ✅ | ✅ |
 | Кастомная замена кадра на любой внешний файл | ✅ | ✅ |
 | Очистка несжатых оригиналов после замены | ✅ | ✅ |
-| **Фоновая авто-замена на лету прямо во время игры** | ❌ | ✅ *(QFileSystemWatcher)* |
-| **Автоопределение запущенной игры через процессы Windows** | ❌ | ✅ *(psutil / tasklist)* |
-| **Встроенный просмотрщик с зумом, колесиком и инфой о MB** | ❌ | ✅ *(без сторонних программ)* |
-| **Фильтр «Только установленные игры» по .acf манифестам** | ❌ | ✅ |
-| **Отображение оригинальных иконок игр в меню выбора** | ❌ | ✅ |
-| **Кастомные Toast-уведомления с превью кадра (4 угла экрана)** | ❌ | ✅ |
-| **Аудио-отклик об успешной замене (встроенный футуристичный синтезатор)** | ❌ | ✅ |
-| **Работа из системного трея и автозапуск с Windows** | ❌ | ✅ *(через планировщик)* |
+| **Система лицензирования** | ❌ | ✅ |
+| **Фоновая авто-замена на лету во время игры** | ❌ | ✅ |
+| **Автоопределение запущенной игры через процессы Windows** | ❌ | ✅ |
+| **Встроенный просмотрщик изображений с зумом и панорамированием** | ❌ | ✅ |
+| **Фильтр «Только установленные игры»** | ❌ | ✅ |
+| **Отображение оригинальных иконок игр в меню** | ❌ | ✅ |
+| **Кастомные уведомления с превью кадра (4 угла экрана)** | ❌ | ✅ |
+| **Аудио-уведомление об успешной замене** | ❌ | ✅ |
+| **Работа в системном трее и автозапуск с Windows** | ❌ | ✅ |
 
 👉 **[Получить Pro-версию и поддержать проект на Boosty](https://boosty.to/steriagame)**
+
 
 ---
 
@@ -199,25 +201,26 @@ To replace a file manually, you would have to:
 
 ---
 
-## 💎 Version Comparison: Free (GitHub) vs. Pro (Boosty)
+## 💎 Version Comparison: Free (v4.2) vs. Pro (v4.4.1)
 
-The Free version provides a complete manual workflow. For users seeking seamless, real-time background automation without manual clicking, the **Pro version** is available:
+The Free version provides all the essential core features for manual workflows. For those who value maximum comfort, automation, and full control over the process, the **Pro version** is designed:
 
-| Feature | Free v4.2 (GitHub) | Pro v4.4+ (Boosty) |
+| Feature / Capability | Free v4.2 (GitHub) | Pro v4.4.1 (Boosty) |
 | :--- | :---: | :---: |
-| Batch upgrade screenshots to HD manually | ✅ | ✅ |
-| Custom replacement with any external image | ✅ | ✅ |
-| Delete uncompressed originals after replacement | ✅ | ✅ |
-| **Real-time background auto-upgrade while gaming** | ❌ | ✅ *(QFileSystemWatcher)* |
-| **Automatic active game detection via running processes** | ❌ | ✅ *(psutil / tasklist)* |
-| **Built-in viewer with zoom, mouse wheel pan & file info** | ❌ | ✅ *(no third-party apps needed)* |
-| **"Installed Games Only" filter based on `.acf` manifests** | ❌ | ✅ |
-| **Display native game icons inside the selector menu** | ❌ | ✅ |
-| **Custom neon toast notifications with capture previews** | ❌ | ✅ *(4 selectable screen corners)* |
-| **Futuristic audio chime on successful upgrade** | ❌ | ✅ *(synthesized audio + volume slider)* |
-| **Minimize to system tray & start with Windows** | ❌ | ✅ *(via Windows Task Scheduler)* |
+| Manual batch upgrade of screenshots to HD | ✅ | ✅ |
+| Custom frame replacement with any external file | ✅ | ✅ |
+| Cleaning up uncompressed originals after replacement | ✅ | ✅ |
+| **License key protection system** | ❌ | ✅ |
+| **Background auto-replacement on-the-fly during gameplay** | ❌ | ✅ |
+| **Auto-detection of running games via Windows processes** | ❌ | ✅ |
+| **Built-in image viewer with zoom and panning** | ❌ | ✅ |
+| **"Installed games only" filter** | ❌ | ✅ |
+| **Display original game icons in the menu** | ❌ | ✅ |
+| **Custom notifications with frame preview (4 screen corners)** | ❌ | ✅ |
+| **Audio notification on successful replacement** | ❌ | ✅ |
+| **System tray operation and Windows autostart** | ❌ | ✅ |
 
-👉 **[Support the developer & get the Pro version on Boosty](https://boosty.to/steriagame)**
+👉 **[Get the Pro version and support the project on Boosty](https://boosty.to/steriagame)**
 
 ---
 
