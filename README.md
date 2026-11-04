@@ -55,7 +55,7 @@
 
 Бесплатная версия предоставляет весь необходимый базовый функционал для ручной работы. Для тех, кто ценит максимальный комфорт, автоматизацию и полный контроль над процессом, разработана **Pro-версия**:
 
-| Возможность / Функция | Free v4.2 (GitHub) | Pro v4.4.1 (Boosty) |
+| Возможность / Функция | Free v4.2 (GitHub) | Premium v4.4.1 (Boosty) |
 | :--- | :---: | :---: |
 | Ручной апгрейд пачки скриншотов в HD | ✅ | ✅ |
 | Кастомная замена кадра на любой внешний файл | ✅ | ✅ |
@@ -70,7 +70,8 @@
 | **Аудио-уведомление об успешной замене** | ❌ | ✅ |
 | **Работа в системном трее и автозапуск с Windows** | ❌ | ✅ |
 
-👉 **[Получить Pro-версию и поддержать проект на Boosty](https://boosty.to/steriagame)**
+👉 **[Получить Premium-версию и поддержать проект на Boosty](https://boosty.to/steriagame)**
+👉 **[Просто получить Premium-версию]([https://boosty.to/steriagame](https://ggsel.io/catalog/product/screenhdsteam-pro-kliuc-licenzii-7-dnei-global-steam-utilita-104046898))******
 
 
 ---
@@ -80,7 +81,7 @@
 Версия **v4.2 FREE является финальным функциональным релизом** открытой ветки. 
 * Программа полностью стабильна, автономна и закрывает все базовые потребности ручной синхронизации скриншотов.
 * **Бесплатная версия больше не будет получать новые функции и крупные обновления.**
-* Все дальнейшие технические новшества, интеграции, фоновые алгоритмы и функции автоматизации будут развиваться и выходить исключительно в рамках **Pro-версии на Boosty**.
+* Все дальнейшие технические новшества, интеграции, фоновые алгоритмы и функции автоматизации будут развиваться и выходить исключительно в рамках **Premium-версии на Boosty**.
 
 ---
 
@@ -201,11 +202,11 @@ To replace a file manually, you would have to:
 
 ---
 
-## 💎 Version Comparison: Free (v4.2) vs. Pro (v4.4.1)
+## 💎 Version Comparison: Free (v4.2) vs. Premium (v4.4.1)
 
 The Free version provides all the essential core features for manual workflows. For those who value maximum comfort, automation, and full control over the process, the **Pro version** is designed:
 
-| Feature / Capability | Free v4.2 (GitHub) | Pro v4.4.1 (Boosty) |
+| Feature / Capability | Free v4.2 (GitHub) | Premium v4.4.1 (Boosty) |
 | :--- | :---: | :---: |
 | Manual batch upgrade of screenshots to HD | ✅ | ✅ |
 | Custom frame replacement with any external file | ✅ | ✅ |
@@ -220,8 +221,8 @@ The Free version provides all the essential core features for manual workflows. 
 | **Audio notification on successful replacement** | ❌ | ✅ |
 | **System tray operation and Windows autostart** | ❌ | ✅ |
 
-👉 **[Get the Pro version and support the project on Boosty](https://boosty.to/steriagame)**
-
+👉 **[Get the Premium version and support the project on Boosty](https://boosty.to/steriagame)**
+👉 **[Buy ScreenHDSteam Premuim on GGSEL]([https://boosty.to/steriagame](https://ggsel.io/catalog/product/screenhdsteam-pro-kliuc-licenzii-7-dnei-global-steam-utilita-104046898))******
 ---
 
 ## 📌 IMPORTANT NOTICE: Status of the Free Version
@@ -229,7 +230,7 @@ The Free version provides all the essential core features for manual workflows. 
 Version **v4.2 FREE is the final feature release** for the open-source branch of the project.
 * The Free edition is fully stable, standalone, complete, and ready for daily use.
 * **The Free version will no longer receive new feature additions or major updates.**
-* All future feature development, background watcher improvements, and advanced automation workflows will be released exclusively as part of the **Pro version on Boosty**.
+* All future feature development, background watcher improvements, and advanced automation workflows will be released exclusively as part of the **Premium version on Boosty**.
 
 ---
 
