@@ -1,4 +1,4 @@
-# <img src="" width="400" height="400" align="center">ScreenHDStudio - RU
+# <img src="iconShdS.png" width="400" height="400" align="center">ScreenHDStudio - RU
 
 
 # 📸 ScreenHDStudio - Безупречное качество ваших скриншотов Steam
@@ -149,7 +149,7 @@ ScreenHDStudio/
 *Создано для игрового комьюнити и ценителей качественных кадров. Спасибо за поддержку проекта!*
 
 
-# <img src="" width="400" height="400" align="center">ScreenHDStudio - ENG
+# <img src="iconShdS.png" width="400" height="400" align="center">ScreenHDStudio - ENG
 
 
 # 📸 ScreenHDStudio — Flawless Quality for Your Steam Screenshots
