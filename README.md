@@ -1,7 +1,7 @@
-# <img src="iconShdS.png" width="400" height="400" align="center">ScreenHDSteam Studio - RU
+# <img src="" width="400" height="400" align="center">ScreenHDStudio - RU
 
 
-# 📸 ScreenHDSteam Studio - Безупречное качество ваших скриншотов Steam
+# 📸 ScreenHDStudio - Безупречное качество ваших скриншотов Steam
 ### Релиз: v4.2 Major Update (FREE)
 
 > **Забудьте о «мыле», артефактах и бандинге в профиле Steam.**  
@@ -26,11 +26,11 @@
 * Пересохранить его в строгом формате.
 * Создать уменьшенную копию (миниатюру) с правильными пропорциями в скрытую подпапку `thumbnails/`.
 
-**ScreenHDSteam Studio делает все это за вас в один клик.**
+**ScreenHDStudio делает все это за вас в один клик.**
 
 ---
 
-## ⚙️ Как работает ScreenHDSteam Studio под капотом
+## ⚙️ Как работает ScreenHDStudio под капотом
 
 1. **Анализ библиотек Steam:** утилита считывает системный реестр Windows и файлы конфигураций (`config.vdf`, `libraryfolders.vdf`), обнаруживая все ваши игровые библиотеки на дисках.
 2. **Синхронизация по отпечаткам кадров:** программа анализирует папку с исходными HD-копиями и папку скриншотов конкретной игры, находя совпадения по временным меткам и именам файлов.
@@ -110,8 +110,8 @@
 * Убедитесь, что установлен **Python 3.10+** (с добавлением в системный PATH).
 * Склонируйте репозиторий и перейдите в папку с проектом:
   ```bash
-  git clone https://github.com/STERIAGAME/ScreenHDSteam.git
-  cd ScreenHDSteam
+  git clone https://github.com/STERIAGAME/ScreenHDStudio.git
+  cd ScreenHDStudio
   ```
 
 #### 2. Установка зависимостей
@@ -122,14 +122,14 @@ pip install PyQt6 Pillow pyinstaller
 
 #### 3. Запуск в режиме разработки
 ```bash
-python ScreenHDSteam.py
+python ScreenHDStudio.py
 ```
 
 #### 4. Компиляция в standalone `.exe` через PyInstaller
 Чтобы упаковать скрипт и все графические ресурсы в единый портативный исполняемый файл без консольного окна, выполните команду в корне проекта:
 
 ```bash
-pyinstaller --noconsole --onefile --icon=iconShdS.ico --add-data "iconShdS.ico;." --add-data "iconShdS.png;." --add-data "btn_settings.png;." --add-data "btn_refresh.png;." --add-data "btn_view.png;." --add-data "btn_mode_auto.png;." --add-data "btn_mode_custom.png;." --add-data "btn_update_git.png;." ScreenHDSteam.py
+pyinstaller --noconsole --onefile --icon=iconShdS.ico --add-data "iconShdS.ico;." --add-data "iconShdS.png;." --add-data "btn_settings.png;." --add-data "btn_refresh.png;." --add-data "btn_view.png;." --add-data "btn_mode_auto.png;." --add-data "btn_mode_custom.png;." --add-data "btn_update_git.png;."ScreenHDStudio.py
 ```
 
 * **`--noconsole`** - отключает окно командной строки при запуске GUI.
@@ -140,19 +140,19 @@ pyinstaller --noconsole --onefile --icon=iconShdS.ico --add-data "iconShdS.ico;.
 #### 5. Результат сборки
 Готовый бинарник будет сформирован в подкаталоге **`dist`**:
 ```text
-ScreenHDSteam/
+ScreenHDStudio/
 └── dist/
-    └── ScreenHDSteam.exe   <-- Готовая к запуску программа
+    └── ScreenHDStudio.exe   <-- Готовая к запуску программа
 ```
 
 ---
 *Создано для игрового комьюнити и ценителей качественных кадров. Спасибо за поддержку проекта!*
 
 
-# <img src="iconShdS.png" width="400" height="400" align="center">ScreenHDSteam Studio - ENG
+# <img src="" width="400" height="400" align="center">ScreenHDStudio - ENG
 
 
-# 📸 ScreenHDSteam Studio — Flawless Quality for Your Steam Screenshots
+# 📸 ScreenHDStudio — Flawless Quality for Your Steam Screenshots
 ### Release: v4.2 Major Update (FREE)
 
 > **Forget about blurry shots, compression artifacts, and color banding on your Steam profile.**  
@@ -177,11 +177,11 @@ To replace a file manually, you would have to:
 * Re-encode it into strict formatting parameters.
 * Generate a proper downscaled thumbnail with exact aspect ratios in the hidden `thumbnails/` subfolder (otherwise, Steam will refuse to load it).
 
-**ScreenHDSteam Studio automates this entire pipeline in a single click.**
+**ScreenHDStudio automates this entire pipeline in a single click.**
 
 ---
 
-## ⚙️ How ScreenHDSteam Studio works under the hood
+## ⚙️ How ScreenHDStudio works under the hood
 
 1. **Steam Library Discovery:** Scans the Windows Registry and Steam configuration files (`config.vdf`, `libraryfolders.vdf`), automatically discovering all Steam game libraries across any drive.
 2. **Fingerprint Matching:** Analyzes your uncompressed HD folder alongside the game's Steam screenshot directory, finding exact pairs via timestamps and file naming conventions.
@@ -222,7 +222,7 @@ The Free version provides all the essential core features for manual workflows. 
 | **System tray operation and Windows autostart** | ❌ | ✅ |
 
 👉 **[Get the Premium version and support the project on Boosty](https://boosty.to/steriagame)**
-👉 **[Buy ScreenHDSteam Premuim on GGSEL]([https://boosty.to/steriagame](https://ggsel.io/catalog/product/screenhdsteam-pro-kliuc-licenzii-7-dnei-global-steam-utilita-104046898))******
+👉 **[Buy ScreenHDStudio Premuim on GGSEL]([https://boosty.to/steriagame](https://ggsel.io/catalog/product/screenhdsteam-pro-kliuc-licenzii-7-dnei-global-steam-utilita-104046898))******
 ---
 
 ## 📌 IMPORTANT NOTICE: Status of the Free Version
@@ -257,8 +257,8 @@ If you would like to run the project from source or compile your own clean stand
 * Ensure **Python 3.10+** is installed (and added to your system `PATH`).
 * Clone the repository and navigate into the project directory:
   ```bash
-  git clone https://github.com/STERIAGAME/ScreenHDSteam.git
-  cd ScreenHDSteam
+  git clone https://github.com/STERIAGAME/ScreenHDStudio.git
+  cd ScreenHDStudio
   ```
 
 #### 2. Install Dependencies
@@ -269,14 +269,14 @@ pip install PyQt6 Pillow pyinstaller
 
 #### 3. Run in Development Mode
 ```bash
-python ScreenHDSteam.py
+python ScreenHDStudio.py
 ```
 
 #### 4. Compile to Standalone `.exe` via PyInstaller
 To bundle the script and all required UI assets into a single portable binary without an attached console window, run:
 
 ```bash
-pyinstaller --noconsole --onefile --icon=iconShdS.ico --add-data "iconShdS.ico;." --add-data "iconShdS.png;." --add-data "btn_settings.png;." --add-data "btn_refresh.png;." --add-data "btn_view.png;." --add-data "btn_mode_auto.png;." --add-data "btn_mode_custom.png;." --add-data "btn_update_git.png;." ScreenHDSteam.py
+pyinstaller --noconsole --onefile --icon=iconShdS.ico --add-data "iconShdS.ico;." --add-data "iconShdS.png;." --add-data "btn_settings.png;." --add-data "btn_refresh.png;." --add-data "btn_view.png;." --add-data "btn_mode_auto.png;." --add-data "btn_mode_custom.png;." --add-data "btn_update_git.png;."ScreenHDStudio.py
 ```
 
 * **`--noconsole`** — Hides the command-line prompt window when launching the GUI.
@@ -287,9 +287,9 @@ pyinstaller --noconsole --onefile --icon=iconShdS.ico --add-data "iconShdS.ico;.
 #### 5. Output Directory
 Once the compilation finishes, your standalone executable will be located in the **`dist`** subfolder:
 ```text
-ScreenHDSteam/
+ScreenHDStudio/
 └── dist/
-    └── ScreenHDSteam.exe   <-- Ready-to-run standalone program
+    └── ScreenHDStudio.exe   <-- Ready-to-run standalone program
 ```
 The temporary `build/` directory and `.spec` file can be safely removed after compilation.
 
