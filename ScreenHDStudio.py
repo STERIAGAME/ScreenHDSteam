@@ -71,7 +71,7 @@ def get_system_language():
 LANG = get_system_language()
 TRANSLATIONS = {
     "RU": {
-        "title": "ScreenHDSteam Studio",
+        "title": "ScreenHDStudio",
         "settings_title": "НАСТРОЙКИ СИНХРОНИЗАЦИИ",
         "settings_btn": " Настройки",
         "hd_label": "Источник (Папка HD с четкими копиями):",
@@ -104,7 +104,7 @@ TRANSLATIONS = {
         "process_error": "Не удалось обработать изображение.<br>Для поддержки формата (например, AVIF) установите: <b>pip install pillow-heif</b>"
     },
     "EN": {
-        "title": "ScreenHDSteam Studio",
+        "title": "ScreenHDStudio",
         "settings_title": "SYNCHRONIZATION SETTINGS",
         "settings_btn": " Settings",
         "hd_label": "Source (HD Folder with clear copies):",
@@ -592,7 +592,7 @@ class GitHubUpdateWorker(QThread):
 
     def run(self):
         try:
-            raw_url = "https://raw.githubusercontent.com/STERIAGAME/ScreenHDSteam/refs/heads/main/version.txt"
+            raw_url = "https://raw.githubusercontent.com/STERIAGAME/ScreenHDStudio/refs/heads/main/version.txt"
             req = urllib.request.Request(raw_url)
             req.add_header('User-Agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36')
             req.add_header('Cache-Control', 'no-cache, no-store, must-revalidate')
@@ -769,7 +769,7 @@ class ScreenshotApp(QMainWindow):
                 self.icon_lbl.setPixmap(px.scaled(50, 50, Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation))
 
         header_layout.addWidget(self.icon_lbl)
-        title_lbl = QLabel("ScreenHDSteam Studio", header)
+        title_lbl = QLabel("ScreenHDStudio", header)
         title_lbl.setStyleSheet("color: white; font-size: 16px; font-weight: bold; background: transparent; border: none; margin-left: 5px;")
         header_layout.addWidget(title_lbl)
         
